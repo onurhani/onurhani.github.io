@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "Have you heard about the Collatz Conjecture?"
-excerpt: "..and how to create the Collatz the sequence with any initial value using Python?"
+title: "Collatz sequence (or Hailstone sequence)"
+excerpt: "Creating the Collatz sequence with Python."
 categories: [python]
 comments: true
 ---
