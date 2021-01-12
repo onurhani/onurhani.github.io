@@ -4,4 +4,4 @@ title: Lists
 permalink: /lists/
 ---
 
-On this site you can present projects you are working on or you have already finished. You can give short descriptions of the project here or create special project pages your can link here.
+I'm going to add my favourite stuff to read, listen and watch here. 
