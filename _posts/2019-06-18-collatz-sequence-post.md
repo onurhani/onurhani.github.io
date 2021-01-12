@@ -12,7 +12,7 @@ Hello, world! It took couple of weeks to recover from cumulative stress of thesi
 
 Based on the definition of Collatz cojecture, here is the pseudocode of how Collatz sequence is formed:
 
-```pseudocode
+```python
  function collatz(n)
  while n > 1
    show n
