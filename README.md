@@ -1,1 +1,5 @@
-Personal blog developed with minimalistic jekyll blogging theme (http://www.marc-weitz.de/minimalist/)
+# onurhani.github.io
+
+Personal portfolio site with a Windows 98 desktop theme.
+
+Built with vanilla HTML, CSS, and JavaScript — no dependencies, no build step.

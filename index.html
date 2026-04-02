@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Onur Irkin</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23008080'/><text x='2' y='13' font-size='13' fill='white'>O</text></svg>">
+<style>
+  @font-face {
+    font-family: 'W95FA';
+    src: url('https://cdn.jsdelivr.net/gh/nickvdyck/windows-95-font@master/fonts/w95fa.woff2') format('woff2');
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --win-bg: #c0c0c0; --win-dark: #808080; --win-darker: #404040;
+    --win-light: #dfdfdf; --win-lighter: #ffffff; --win-title: #000080;
+    --win-title-inactive: #808080; --win-title-text: #ffffff;
+    --win-desktop: #008080; --win-highlight: #000080;
+    --win-text: #000000; --win-link: #0000ff;
+  }
+  html, body {
+    width: 100%; height: 100%; overflow: hidden;
+    font-family: 'W95FA', 'MS Sans Serif', Tahoma, sans-serif;
+    font-size: 11px; color: var(--win-text);
+    user-select: none; -webkit-user-select: none;
+  }
+  #desktop {
+    width: 100%; height: calc(100% - 28px); background: var(--win-desktop);
+    position: relative; overflow: hidden; display: flex; flex-direction: column;
+    flex-wrap: wrap; align-content: flex-start; padding: 12px; gap: 8px;
+  }
+  .desktop-icon {
+    display: flex; flex-direction: column; align-items: center; width: 70px;
+    padding: 4px 2px; cursor: pointer; text-align: center; border: 1px solid transparent;
+  }
+  .desktop-icon:hover { background: rgba(255,255,255,0.08); }
+  .desktop-icon:active, .desktop-icon.selected { border: 1px dotted #fff; }
+  .desktop-icon .icon-img { width: 32px; height: 32px; margin-bottom: 4px; image-rendering: pixelated; }
+  .desktop-icon .icon-label { color: #fff; text-shadow: 1px 1px 0 #000; font-size: 11px; line-height: 1.3; word-break: break-word; }
+  .window {
+    position: absolute; background: var(--win-bg); min-width: 200px; min-height: 120px;
+    display: flex; flex-direction: column;
+    box-shadow: inset 1px 1px 0 var(--win-lighter), inset -1px -1px 0 var(--win-dark), 2px 2px 0 rgba(0,0,0,0.3);
+    border: 2px solid var(--win-bg); border-top-color: var(--win-lighter);
+    border-left-color: var(--win-lighter); border-bottom-color: var(--win-darker);
+    border-right-color: var(--win-darker);
+  }
+  .window.hidden { display: none; }
+  .window.maximized { top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; }
+  .title-bar {
+    background: linear-gradient(90deg, var(--win-title), #1084d0);
+    color: var(--win-title-text); display: flex; align-items: center;
+    padding: 2px 3px; font-weight: bold; font-size: 11px; cursor: default;
+    flex-shrink: 0; height: 20px;
+  }
+  .window.inactive .title-bar { background: linear-gradient(90deg, var(--win-title-inactive), #b5b5b5); }
+  .title-bar-icon { width: 14px; height: 14px; margin-right: 4px; image-rendering: pixelated; }
+  .title-bar-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .title-bar-controls { display: flex; gap: 2px; }
+  .title-bar-controls button {
+    width: 16px; height: 14px; background: var(--win-bg);
+    border-top: 1px solid var(--win-lighter); border-left: 1px solid var(--win-lighter);
+    border-bottom: 1px solid var(--win-darker); border-right: 1px solid var(--win-darker);
+    font-size: 9px; font-family: inherit; display: flex; align-items: center;
+    justify-content: center; cursor: pointer; padding: 0; line-height: 1;
+  }
+  .title-bar-controls button:active {
+    border-top-color: var(--win-darker); border-left-color: var(--win-darker);
+    border-bottom-color: var(--win-lighter); border-right-color: var(--win-lighter);
+    padding-top: 1px; padding-left: 1px;
+  }
+  .window-body {
+    flex: 1; margin: 4px; padding: 8px; overflow: auto; background: #fff;
+    border-top: 2px solid var(--win-darker); border-left: 2px solid var(--win-darker);
+    border-bottom: 2px solid var(--win-lighter); border-right: 2px solid var(--win-lighter);
+    font-size: 12px; line-height: 1.6; user-select: text; -webkit-user-select: text; color: var(--win-text);
+  }
+  .window-body h2 { font-size: 14px; margin: 12px 0 6px; border-bottom: 1px solid var(--win-dark); padding-bottom: 2px; }
+  .window-body h2:first-child { margin-top: 0; }
+  .window-body p { margin: 4px 0; }
+  .window-body ul { margin: 4px 0 4px 20px; }
+  .window-body li { margin: 2px 0; }
+  .window-body a { color: var(--win-link); }
+  .window-body a:visited { color: #800080; }
+  .window-body .section { margin-bottom: 12px; }
+  .window-body .job-date { color: var(--win-dark); font-size: 11px; }
+  .window-body .divider { border: none; border-top: 1px solid var(--win-dark); margin: 8px 0; }
+  .status-bar { display: flex; flex-shrink: 0; padding: 2px 4px; gap: 2px; }
+  .status-bar-field {
+    flex: 1; padding: 1px 4px;
+    border-top: 1px solid var(--win-darker); border-left: 1px solid var(--win-darker);
+    border-bottom: 1px solid var(--win-lighter); border-right: 1px solid var(--win-lighter);
+    font-size: 11px;
+  }
+  .resize-handle {
+    position: absolute; bottom: 0; right: 0; width: 14px; height: 14px; cursor: nwse-resize;
+    background: linear-gradient(135deg, transparent 30%, var(--win-dark) 30%, var(--win-dark) 40%, transparent 40%, transparent 50%, var(--win-dark) 50%, var(--win-dark) 60%, transparent 60%, transparent 70%, var(--win-dark) 70%, var(--win-dark) 80%, transparent 80%);
+  }
+  #taskbar {
+    height: 28px; background: var(--win-bg); border-top: 2px solid var(--win-lighter);
+    display: flex; align-items: center; padding: 2px; gap: 2px; position: relative; z-index: 99999;
+  }
+  #start-btn {
+    height: 22px; padding: 0 6px; display: flex; align-items: center; gap: 3px;
+    font-family: inherit; font-weight: bold; font-size: 11px; background: var(--win-bg);
+    border-top: 2px solid var(--win-lighter); border-left: 2px solid var(--win-lighter);
+    border-bottom: 2px solid var(--win-darker); border-right: 2px solid var(--win-darker); cursor: pointer;
+  }
+  #start-btn:active, #start-btn.active {
+    border-top-color: var(--win-darker); border-left-color: var(--win-darker);
+    border-bottom-color: var(--win-lighter); border-right-color: var(--win-lighter);
+    padding-top: 1px; padding-left: 7px;
+  }
+  #start-btn .win-logo { width: 16px; height: 16px; }
+  .taskbar-divider { width: 2px; height: 22px; border-left: 1px solid var(--win-darker); border-right: 1px solid var(--win-lighter); margin: 0 2px; }
+  #taskbar-windows { flex: 1; display: flex; gap: 2px; overflow: hidden; }
+  .taskbar-btn {
+    height: 22px; min-width: 120px; max-width: 160px; padding: 0 6px;
+    display: flex; align-items: center; gap: 4px; font-family: inherit; font-size: 11px;
+    background: var(--win-bg); border-top: 2px solid var(--win-lighter); border-left: 2px solid var(--win-lighter);
+    border-bottom: 2px solid var(--win-darker); border-right: 2px solid var(--win-darker);
+    cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left;
+  }
+  .taskbar-btn.active {
+    border-top-color: var(--win-darker); border-left-color: var(--win-darker);
+    border-bottom-color: var(--win-lighter); border-right-color: var(--win-lighter);
+    font-weight: bold; background: repeating-conic-gradient(var(--win-bg) 0% 25%, #fff 0% 50%) 0 0 / 2px 2px;
+  }
+  #clock {
+    height: 22px; padding: 0 8px; display: flex; align-items: center; font-size: 11px;
+    border-top: 1px solid var(--win-darker); border-left: 1px solid var(--win-darker);
+    border-bottom: 1px solid var(--win-lighter); border-right: 1px solid var(--win-lighter);
+    min-width: 60px; justify-content: center;
+  }
+  #start-menu {
+    position: absolute; bottom: 28px; left: 2px; width: 200px; background: var(--win-bg);
+    border-top: 2px solid var(--win-lighter); border-left: 2px solid var(--win-lighter);
+    border-bottom: 2px solid var(--win-darker); border-right: 2px solid var(--win-darker);
+    z-index: 100000; display: none; flex-direction: column;
+  }
+  #start-menu.visible { display: flex; }
+  .start-menu-sidebar {
+    position: absolute; left: 0; bottom: 0; width: 24px; height: 100%;
+    background: linear-gradient(to top, var(--win-title), #1084d0);
+    display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px;
+  }
+  .start-menu-sidebar span { writing-mode: vertical-rl; transform: rotate(180deg); color: var(--win-title-text); font-weight: bold; font-size: 16px; letter-spacing: 1px; }
+  .start-menu-items { margin-left: 24px; padding: 2px 0; }
+  .start-menu-item { display: flex; align-items: center; gap: 8px; padding: 6px 12px; cursor: pointer; font-size: 11px; }
+  .start-menu-item:hover { background: var(--win-highlight); color: #fff; }
+  .start-menu-item .smi-icon { width: 24px; height: 24px; flex-shrink: 0; }
+  .start-menu-sep { margin: 2px 24px 2px 28px; border: none; border-top: 1px solid var(--win-dark); border-bottom: 1px solid var(--win-lighter); }
+  .teletext-body {
+    background: #000 !important; color: #fff; font-family: 'Courier New', monospace;
+    font-size: 14px; line-height: 1.4; padding: 12px !important;
+  }
+  .teletext-body .tt-header { background: #00f; color: #ff0; padding: 4px 8px; text-align: center; font-weight: bold; margin-bottom: 8px; }
+  .teletext-body .tt-cyan { color: #0ff; } .teletext-body .tt-yellow { color: #ff0; }
+  .teletext-body .tt-green { color: #0f0; } .teletext-body .tt-magenta { color: #f0f; }
+  .teletext-body .tt-red { color: #f00; } .teletext-body .tt-white { color: #fff; }
+  .teletext-body a { color: #0ff; }
+  .resume-body { padding: 0 !important; display: flex; flex-direction: column; }
+  .resume-body .pdf-toolbar {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 6px 8px; background: var(--win-bg); border-bottom: 1px solid var(--win-dark); flex-shrink: 0;
+  }
+  .resume-body .pdf-toolbar span { font-size: 11px; }
+  .win-btn {
+    padding: 2px 12px; font-family: inherit; font-size: 11px; background: var(--win-bg);
+    border-top: 2px solid var(--win-lighter); border-left: 2px solid var(--win-lighter);
+    border-bottom: 2px solid var(--win-darker); border-right: 2px solid var(--win-darker);
+    cursor: pointer; text-decoration: none; color: var(--win-text);
+  }
+  .win-btn:active { border-top-color: var(--win-darker); border-left-color: var(--win-darker); border-bottom-color: var(--win-lighter); border-right-color: var(--win-lighter); }
+  .resume-body iframe { flex: 1; width: 100%; border: none; }
+  .blog-nav { display: flex; gap: 4px; margin-bottom: 8px; }
+  .blog-tab {
+    padding: 2px 10px; font-family: inherit; font-size: 11px; background: var(--win-bg);
+    border-top: 2px solid var(--win-lighter); border-left: 2px solid var(--win-lighter);
+    border-bottom: 2px solid var(--win-darker); border-right: 2px solid var(--win-darker); cursor: pointer;
+  }
+  .blog-tab:active, .blog-tab.active {
+    border-top-color: var(--win-darker); border-left-color: var(--win-darker);
+    border-bottom-color: var(--win-lighter); border-right-color: var(--win-lighter); font-weight: bold;
+  }
+  .blog-post { display: none; } .blog-post.active { display: block; }
+  .blog-post pre {
+    background: #f0f0f0; border: 1px solid var(--win-dark); padding: 6px 8px;
+    font-family: 'Courier New', monospace; font-size: 11px; overflow-x: auto; margin: 6px 0; white-space: pre-wrap;
+  }
+  .blog-post code { font-family: 'Courier New', monospace; font-size: 11px; background: #f0f0f0; padding: 0 3px; }
+  .window-body::-webkit-scrollbar { width: 16px; }
+  .window-body::-webkit-scrollbar-track { background: repeating-conic-gradient(var(--win-bg) 0% 25%, #fff 0% 50%) 0 0 / 2px 2px; }
+  .window-body::-webkit-scrollbar-thumb {
+    background: var(--win-bg); border-top: 2px solid var(--win-lighter); border-left: 2px solid var(--win-lighter);
+    border-bottom: 2px solid var(--win-darker); border-right: 2px solid var(--win-darker);
+  }
+  .window-body::-webkit-scrollbar-button {
+    background: var(--win-bg); border-top: 2px solid var(--win-lighter); border-left: 2px solid var(--win-lighter);
+    border-bottom: 2px solid var(--win-darker); border-right: 2px solid var(--win-darker); height: 16px;
+  }
+  #boot-screen {
+    position: fixed; inset: 0; background: #000; z-index: 999999;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: #c0c0c0; font-family: 'Courier New', monospace; font-size: 14px; transition: opacity 0.5s;
+  }
+  #boot-screen.fade-out { opacity: 0; pointer-events: none; }
+  #boot-screen .boot-logo { font-size: 18px; color: #fff; margin-bottom: 24px; text-align: center; line-height: 1.2; }
+  #boot-screen .boot-bar-container { width: 200px; height: 18px; background: var(--win-darker); border: 2px solid var(--win-dark); padding: 2px; }
+  #boot-screen .boot-bar { height: 100%; width: 0%; background: var(--win-title); transition: width 0.3s; }
+  #boot-screen .boot-text { margin-top: 12px; font-size: 12px; }
+  @media (max-width: 700px) {
+    .window { width: calc(100% - 8px) !important; left: 4px !important; max-height: calc(100% - 8px); }
+    .taskbar-btn { min-width: 40px; max-width: 80px; }
+    .taskbar-btn span { display: none; }
+  }
+</style>
+</head>
+<body>
+<div id="boot-screen">
+  <div class="boot-logo"><span style="color:#fff;font-weight:bold;">OnurOS 98</span><br><span style="font-size:12px;color:#808080;">Personal Edition</span></div>
+  <div class="boot-bar-container"><div class="boot-bar" id="boot-bar"></div></div>
+  <div class="boot-text" id="boot-text">Starting...</div>
+</div>
+
+<div id="desktop">
+  <div class="desktop-icon" ondblclick="openWindow('about')" onclick="selectIcon(this)">
+    <svg class="icon-img" viewBox="0 0 32 32" fill="none"><rect x="2" y="4" width="28" height="24" rx="1" fill="#ffffe0" stroke="#808080"/><line x1="6" y1="10" x2="26" y2="10" stroke="#c0c0c0" stroke-width="0.5"/><line x1="6" y1="14" x2="26" y2="14" stroke="#c0c0c0" stroke-width="0.5"/><line x1="6" y1="18" x2="26" y2="18" stroke="#c0c0c0" stroke-width="0.5"/><line x1="6" y1="22" x2="26" y2="22" stroke="#c0c0c0" stroke-width="0.5"/><text x="6" y="13" fill="#333" font-size="4" font-family="sans-serif">about_me.txt</text></svg>
+    <span class="icon-label">about_me.txt</span>
+  </div>
+  <div class="desktop-icon" ondblclick="openWindow('resume')" onclick="selectIcon(this)">
+    <svg class="icon-img" viewBox="0 0 32 32" fill="none"><path d="M6 2H22L26 6V30H6Z" fill="#fff" stroke="#808080"/><path d="M22 2V6H26" fill="#c0c0c0" stroke="#808080"/><rect x="9" y="9" width="14" height="1.5" fill="#d00"/><rect x="9" y="12" width="12" height="1" fill="#808080"/><rect x="9" y="14.5" width="14" height="1" fill="#808080"/><rect x="9" y="17" width="10" height="1" fill="#808080"/><rect x="9" y="19.5" width="14" height="1" fill="#808080"/><rect x="9" y="22" width="11" height="1" fill="#808080"/><rect x="9" y="24.5" width="14" height="1" fill="#808080"/></svg>
+    <span class="icon-label">Resume.pdf</span>
+  </div>
+  <div class="desktop-icon" ondblclick="openWindow('bio')" onclick="selectIcon(this)">
+    <svg class="icon-img" viewBox="0 0 32 32" fill="none"><rect x="2" y="4" width="28" height="24" rx="1" fill="#ffffe0" stroke="#808080"/><line x1="6" y1="10" x2="26" y2="10" stroke="#c0c0c0" stroke-width="0.5"/><line x1="6" y1="14" x2="26" y2="14" stroke="#c0c0c0" stroke-width="0.5"/><line x1="6" y1="18" x2="26" y2="18" stroke="#c0c0c0" stroke-width="0.5"/><line x1="6" y1="22" x2="26" y2="22" stroke="#c0c0c0" stroke-width="0.5"/><text x="6" y="13" fill="#000080" font-size="5" font-family="serif">Bio</text><text x="6" y="17.5" fill="#333" font-size="3.5" font-family="sans-serif">my story...</text></svg>
+    <span class="icon-label">Biography</span>
+  </div>
+  <div class="desktop-icon" ondblclick="openWindow('teletext')" onclick="selectIcon(this)">
+    <svg class="icon-img" viewBox="0 0 32 32" fill="none"><rect x="2" y="4" width="28" height="22" rx="2" fill="#222" stroke="#808080"/><rect x="4" y="6" width="24" height="18" fill="#000"/><text x="6" y="14" fill="#0ff" font-size="5" font-family="monospace" font-weight="bold">TEXT</text><text x="6" y="20" fill="#ff0" font-size="4" font-family="monospace">ART</text><rect x="12" y="26" width="8" height="2" fill="#808080"/></svg>
+    <span class="icon-label">Teletext Art</span>
+  </div>
+  <div class="desktop-icon" ondblclick="openWindow('links')" onclick="selectIcon(this)">
+    <svg class="icon-img" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="12" fill="#4169e1" stroke="#808080"/><ellipse cx="16" cy="16" rx="6" ry="12" fill="none" stroke="#fff" stroke-width="0.8"/><line x1="4" y1="16" x2="28" y2="16" stroke="#fff" stroke-width="0.8"/><line x1="6" y1="10" x2="26" y2="10" stroke="#fff" stroke-width="0.5"/><line x1="6" y1="22" x2="26" y2="22" stroke="#fff" stroke-width="0.5"/></svg>
+    <span class="icon-label">Links</span>
+  </div>
+  <div class="desktop-icon" ondblclick="openWindow('blog')" onclick="selectIcon(this)">
+    <svg class="icon-img" viewBox="0 0 32 32" fill="none"><rect x="2" y="2" width="28" height="28" rx="1" fill="#fff" stroke="#808080"/><rect x="2" y="2" width="28" height="6" fill="#800000"/><text x="5" y="7" fill="#fff" font-size="4" font-weight="bold" font-family="sans-serif">BLOG</text><rect x="5" y="11" width="22" height="2" fill="#c0c0c0"/><rect x="5" y="15" width="18" height="1.5" fill="#e0e0e0"/><rect x="5" y="18.5" width="22" height="1.5" fill="#e0e0e0"/><rect x="5" y="22" width="15" height="1.5" fill="#e0e0e0"/></svg>
+    <span class="icon-label">Blog</span>
+  </div>
+</div>
+
+<!-- ABOUT ME (.txt) -->
+<div class="window hidden" id="win-about" style="width:480px;height:400px;top:60px;left:140px;z-index:10;">
+  <div class="title-bar" onmousedown="startDrag(event,'win-about')">
+    <svg class="title-bar-icon" viewBox="0 0 16 16"><rect x="1" y="2" width="14" height="12" rx="1" fill="#ffffe0" stroke="#808080" stroke-width="0.5"/></svg>
+    <span class="title-bar-text">about_me.txt - Notepad</span>
+    <div class="title-bar-controls"><button onclick="minimizeWindow('about')">_</button><button onclick="maximizeWindow('about')">□</button><button onclick="closeWindow('about')">×</button></div>
+  </div>
+  <div class="window-body" style="font-family:'Courier New',monospace;font-size:12px;line-height:1.7;white-space:pre-wrap;">Onurhan Irkin
+==============================
+Principal Analytics Engineer
+Berlin, Germany
+
+<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="07686972756f6669296e756c6e6947606a666e6b2964686a">[email&#160;protected]</a>
+github.com/onurhani
+linkedin.com/in/onur-irkin
+
+------------------------------
+
+Analytics Engineer with 6+ years of experience
+turning raw, queryable data into trusted
+analytical truth.
+
+I build the systems that make data trustworthy:
+semantic layers, governance frameworks, and
+transformation pipelines that serve both humans
+and AI.
+
+Core stack: dbt, Snowflake, BigQuery, SQL,
+Python, Looker, Metabase, AWS, Airflow, dlt
+
+Languages: English, German, Turkish
+
+------------------------------
+
+What drives me:
+
+As AI starts querying data directly,
+well-defined semantics and clear ownership
+become critical. Bad metric definitions and
+undocumented models become hallucination risks
+at scale.
+
+I position analytics engineering as the trust
+foundation for AI-driven decision making.
+The semantic layer is not optional — it is the
+interface between messy reality and reliable
+answers.
+
+My motivation is to build analytics platforms
+that people *and machines* can trust — and to
+take ownership of analytical truth where
+accuracy genuinely matters.
+
+==============================
+EOF</div>
+  <div class="status-bar"><div class="status-bar-field">about_me.txt</div><div class="status-bar-field" style="flex:0 0 auto;">EN · DE · TR</div></div>
+  <div class="resize-handle" onmousedown="startResize(event,'win-about')"></div>
+</div>
+
+<!-- RESUME (PDF) -->
+<div class="window hidden" id="win-resume" style="width:600px;height:500px;top:30px;left:80px;z-index:10;">
+  <div class="title-bar" onmousedown="startDrag(event,'win-resume')">
+    <svg class="title-bar-icon" viewBox="0 0 16 16"><path d="M3 1H11L13 3V15H3Z" fill="#fff" stroke="#808080" stroke-width="0.5"/><rect x="5" y="5" width="6" height="1" fill="#d00"/></svg>
+    <span class="title-bar-text">Resume.pdf - Acrobat Reader</span>
+    <div class="title-bar-controls"><button onclick="minimizeWindow('resume')">_</button><button onclick="maximizeWindow('resume')">□</button><button onclick="closeWindow('resume')">×</button></div>
+  </div>
+  <div class="window-body resume-body">
+    <div class="pdf-toolbar">
+      <span>Onurhan_Irkin_CV.pdf</span>
+      <a class="win-btn" href="Onurhan_Irkin_CV.pdf" download>Save</a>
+      <a class="win-btn" href="Onurhan_Irkin_CV.pdf" target="_blank">Open in new tab</a>
+    </div>
+    <iframe src="Onurhan_Irkin_CV.pdf" title="Resume PDF"></iframe>
+  </div>
+  <div class="status-bar"><div class="status-bar-field">Onurhan_Irkin_CV.pdf</div><div class="status-bar-field" style="flex:0 0 80px;">Page 1</div></div>
+  <div class="resize-handle" onmousedown="startResize(event,'win-resume')"></div>
+</div>
+
+<!-- BIOGRAPHY -->
+<div class="window hidden" id="win-bio" style="width:520px;height:460px;top:50px;left:120px;z-index:10;">
+  <div class="title-bar" onmousedown="startDrag(event,'win-bio')">
+    <svg class="title-bar-icon" viewBox="0 0 16 16"><rect x="1" y="2" width="14" height="12" rx="1" fill="#ffffe0" stroke="#808080" stroke-width="0.5"/></svg>
+    <span class="title-bar-text">biography.txt - Notepad</span>
+    <div class="title-bar-controls"><button onclick="minimizeWindow('bio')">_</button><button onclick="maximizeWindow('bio')">□</button><button onclick="closeWindow('bio')">×</button></div>
+  </div>
+  <div class="window-body" style="font-family:'Courier New',monospace;font-size:12px;">
+    <h2>Background &amp; Foundation</h2>
+    <p>I started with a strong engineering and project management foundation. I studied Industrial Engineering at Bilkent University, which shaped how I think about systems, constraints, dependencies, and optimisation.</p>
+    <p>When I moved to Berlin, I chose a Master's in Project Management &amp; Data Science — not to become a pure data scientist, but because I believed every role would need to be data-literate to be effective.</p>
+    <h2>Casper — Discovering Analytics Engineering</h2>
+    <p>Casper was a defining moment. It was my first exposure to the modern data stack: AWS (S3 + Redshift), dbt, and Looker. I owned the Marketing Data Mart, standardising data from multiple channels and building a semantic layer in Looker that became the single source of truth.</p>
+    <p>This work went beyond dashboards — it involved defining what metrics mean, how they should be calculated, and how they should be consistently interpreted. Casper was one of the earliest dbt adopters, and this let me deeply internalise what analytics engineering really is.</p>
+    <h2>Tier Mobility — Scale, Pressure, and Accountability</h2>
+    <p>Tier was hyper-growth: massive data volume, small team, extreme pace. The company generated large-scale IoT event data and billing systems producing over 1 million invoices per month at peak.</p>
+    <p>I naturally became involved with the CFO and finance leadership, audit preparation, and investor reporting for funding rounds. This taught me how critical analytics engineering becomes when trust, money, and external scrutiny are involved.</p>
+    <h2>Contentful — Maturity, Influence, and Structure</h2>
+    <p>At Contentful, progress required influence, persuasion, and patience rather than speed. I focused on refactoring core ARR models, setting up end-to-end month-end closing, and founding a Data Steering Committee aligning Finance, Sales, Product, and Marketing.</p>
+    <p>This role matured me significantly in organisational impact — how to introduce governance and architectural improvements in environments where change isn't naturally welcomed.</p>
+    <h2>Overall Perspective</h2>
+    <p>Across all roles, a consistent theme: turning raw data into trusted analytical truth, designing systems that balance speed, correctness, and trust, and operating at the intersection of engineering, analytics, and business.</p>
+    <p>As AI starts querying data directly, the importance of well-defined semantics, stable models, and clear ownership only increases. My motivation is to build platforms that people <i>and machines</i> can trust.</p>
+  </div>
+  <div class="status-bar"><div class="status-bar-field">biography.txt</div></div>
+  <div class="resize-handle" onmousedown="startResize(event,'win-bio')"></div>
+</div>
+
+<!-- TELETEXT -->
+<div class="window hidden" id="win-teletext" style="width:500px;height:400px;top:70px;left:160px;z-index:10;">
+  <div class="title-bar" onmousedown="startDrag(event,'win-teletext')">
+    <svg class="title-bar-icon" viewBox="0 0 16 16"><rect x="1" y="2" width="14" height="11" rx="1" fill="#222" stroke="#808080" stroke-width="0.5"/><text x="4" y="10" fill="#0ff" font-size="6" font-family="monospace">T</text></svg>
+    <span class="title-bar-text">Teletext Art Generator</span>
+    <div class="title-bar-controls"><button onclick="minimizeWindow('teletext')">_</button><button onclick="maximizeWindow('teletext')">□</button><button onclick="closeWindow('teletext')">×</button></div>
+  </div>
+  <div class="window-body teletext-body">
+    <div class="tt-header">TELETEXT ART  PAGE 100</div>
+    <p class="tt-cyan">+======================================+</p>
+    <p class="tt-cyan">| <span class="tt-yellow">TELETEXT ART GENERATION PROJECT</span>     |</p>
+    <p class="tt-cyan">|======================================|</p>
+    <p class="tt-cyan">|                                      |</p>
+    <p class="tt-cyan">| <span class="tt-white">An exploration of retro teletext</span>     |</p>
+    <p class="tt-cyan">| <span class="tt-white">graphics using modern tools.</span>          |</p>
+    <p class="tt-cyan">|                                      |</p>
+    <p class="tt-cyan">| <span class="tt-green">Generating blocky, colorful art</span>      |</p>
+    <p class="tt-cyan">| <span class="tt-green">in the style of Ceefax, Oracle,</span>      |</p>
+    <p class="tt-cyan">| <span class="tt-green">and classic 80s/90s teletext.</span>        |</p>
+    <p class="tt-cyan">|                                      |</p>
+    <p class="tt-cyan">| <span class="tt-magenta">BLOCK CHARACTERS</span>                    |</p>
+    <p class="tt-cyan">|                                      |</p>
+    <p class="tt-cyan">| <span class="tt-yellow">Status:</span> <span class="tt-green">Work in progress</span>             |</p>
+    <p class="tt-cyan">|                                      |</p>
+    <p class="tt-cyan">+======================================+</p>
+    <br>
+    <p class="tt-white">This project explores generating teletext-style art using AI and code. More coming soon.</p>
+    <br>
+    <p class="tt-red">| <span class="tt-yellow">Check back for updates and interactive demos.</span></p>
+  </div>
+  <div class="resize-handle" onmousedown="startResize(event,'win-teletext')"></div>
+</div>
+
+<!-- LINKS -->
+<div class="window hidden" id="win-links" style="width:360px;height:280px;top:80px;left:200px;z-index:10;">
+  <div class="title-bar" onmousedown="startDrag(event,'win-links')">
+    <svg class="title-bar-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#4169e1"/><ellipse cx="8" cy="8" rx="3" ry="6" fill="none" stroke="#fff" stroke-width="0.6"/><line x1="2" y1="8" x2="14" y2="8" stroke="#fff" stroke-width="0.6"/></svg>
+    <span class="title-bar-text">Links</span>
+    <div class="title-bar-controls"><button onclick="minimizeWindow('links')">_</button><button onclick="maximizeWindow('links')">□</button><button onclick="closeWindow('links')">×</button></div>
+  </div>
+  <div class="window-body">
+    <h2>Find Me Online</h2>
+    <ul style="list-style:none;margin-left:0;">
+      <li style="margin:8px 0"><a href="https://github.com/onurhani" target="_blank">GitHub</a><span style="color:var(--win-dark)"> — github.com/onurhani</span></li>
+      <li style="margin:8px 0"><a href="https://www.linkedin.com/in/onur-irkin/" target="_blank">LinkedIn</a><span style="color:var(--win-dark)"> — linkedin.com/in/onur-irkin</span></li>
+      <li style="margin:8px 0"><a href="/cdn-cgi/l/email-protection#46292833342e2728682f342d2f2806212b272f2a6825292b">Email</a><span style="color:var(--win-dark)"> — <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="117e7f646379707f3f78637a787f51767c70787d3f727e7c">[email&#160;protected]</a></span></li>
+    </ul>
+    <hr class="divider">
+    <h2>Recent Projects</h2>
+    <ul style="list-style:none;margin-left:0;">
+      <li style="margin:8px 0"><a href="https://github.com/onurhani/dog-api-pipeline" target="_blank">Dog API Pipeline</a><span style="color:var(--win-dark)"> — dlt + Airflow + DuckDB</span></li>
+    </ul>
+  </div>
+  <div class="status-bar"><div class="status-bar-field">Done</div></div>
+  <div class="resize-handle" onmousedown="startResize(event,'win-links')"></div>
+</div>
+
+<!-- BLOG (inline with tabs) -->
+<div class="window hidden" id="win-blog" style="width:540px;height:460px;top:45px;left:150px;z-index:10;">
+  <div class="title-bar" onmousedown="startDrag(event,'win-blog')">
+    <svg class="title-bar-icon" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="1" fill="#800000"/><text x="3" y="11" fill="#fff" font-size="7" font-weight="bold" font-family="sans-serif">B</text></svg>
+    <span class="title-bar-text">Blog - onur's thinkspace</span>
+    <div class="title-bar-controls"><button onclick="minimizeWindow('blog')">_</button><button onclick="maximizeWindow('blog')">□</button><button onclick="closeWindow('blog')">×</button></div>
+  </div>
+  <div class="window-body">
+    <div class="blog-nav">
+      <button class="blog-tab active" onclick="showBlogPost('index',this)">Index</button>
+      <button class="blog-tab" onclick="showBlogPost('post1',this)">Profitable App</button>
+      <button class="blog-tab" onclick="showBlogPost('post2',this)">Collatz</button>
+    </div>
+    <div class="blog-post active" id="blog-index">
+      <h2 style="color:#800000;border-bottom:2px solid #800000;">onur's thinkspace</h2>
+      <p style="color:var(--win-dark);margin-bottom:12px;">Writing about data, analytics engineering, and things I find interesting.</p>
+      <hr class="divider">
+      <div class="section">
+        <p><b><a href="#" onclick="showBlogPost('post1',document.querySelectorAll('.blog-tab')[1]);return false;">How To Develop A Profitable App</a></b></p>
+        <p class="job-date">12 Jan 2020</p>
+        <p>A simple analysis to shed light on App Store and Google Store apps.</p>
+      </div>
+      <hr class="divider">
+      <div class="section">
+        <p><b><a href="#" onclick="showBlogPost('post2',document.querySelectorAll('.blog-tab')[2]);return false;">Collatz sequence (or Hailstone sequence)</a></b></p>
+        <p class="job-date">18 Jun 2019</p>
+        <p>Creating the Collatz sequence with Python.</p>
+      </div>
+    </div>
+    <div class="blog-post" id="blog-post1">
+      <p><a href="#" onclick="showBlogPost('index',document.querySelectorAll('.blog-tab')[0]);return false;">&lt; Back to index</a></p>
+      <h2>How To Develop A Profitable App</h2>
+      <p class="job-date">12 Jan 2020</p>
+      <hr class="divider">
+      <p>The goal of this project was to analyse data from the App Store and Google Play Store to understand what types of apps are likely to attract the most users — because in these markets, revenue is primarily driven by in-app ads, meaning more users equals more revenue.</p>
+      <p>The dataset included information on app categories, ratings, reviews, size, pricing, and installs across both platforms. I focused on free apps, since those are the ones that rely on ad-driven revenue models.</p>
+      <p><b>Key findings:</b></p>
+      <ul>
+        <li>Apps in the <b>Books and Reference</b>, <b>Communication</b>, and <b>Social</b> categories showed the highest average install counts across both stores.</li>
+        <li>The Google Play Store had significantly more apps and installs than the App Store, making it a better starting platform for reaching a wide audience.</li>
+        <li>Many categories appeared saturated with low-quality apps — an opportunity for well-built alternatives that deliver real value.</li>
+        <li>Games had the highest volume of apps, but also the most competition and lowest average rating.</li>
+      </ul>
+      <p>The recommendation: build a free app in an underserved but high-demand category (like books/reference), launch first on Google Play to maximise reach, then expand to the App Store once validated.</p>
+      <p>The analysis was done in Python using pandas, and the full notebook is available on my GitHub.</p>
+    </div>
+    <div class="blog-post" id="blog-post2">
+      <p><a href="#" onclick="showBlogPost('index',document.querySelectorAll('.blog-tab')[0]);return false;">&lt; Back to index</a></p>
+      <h2>Collatz sequence (or Hailstone sequence)</h2>
+      <p class="job-date">18 Jun 2019</p>
+      <hr class="divider">
+      <p>The Collatz conjecture is one of those beautifully simple unsolved problems in mathematics. Take any positive integer n. If it's even, divide it by 2. If it's odd, multiply by 3 and add 1. Repeat. The conjecture says you'll always eventually reach 1.</p>
+      <p>The sequence gets its nickname "Hailstone" because the numbers rise and fall unpredictably, like hailstones in a cloud, before eventually settling down.</p>
+      <p><b>The rules:</b></p>
+<pre>if n is even  ->  n / 2
+if n is odd   ->  3n + 1
+repeat until n = 1</pre>
+      <p><b>Example:</b> Starting with 6:</p>
+<pre>6 -> 3 -> 10 -> 5 -> 16 -> 8 -> 4 -> 2 -> 1</pre>
+      <p>I wrote a simple Python function to generate and visualise these sequences. What's interesting is how wildly different starting numbers can behave — some reach 1 quickly, others take hundreds of steps, rocketing up to enormous values before crashing back down.</p>
+<pre>def collatz(n):
+    sequence = [n]
+    while n != 1:
+        if n % 2 == 0:
+            n = n // 2
+        else:
+            n = 3 * n + 1
+        sequence.append(n)
+    return sequence</pre>
+      <p>Despite being so easy to state and implement, no one has been able to prove the Collatz conjecture holds for all numbers. Paul Erdos famously said: "Mathematics is not yet ready for such problems."</p>
+      <p>The full notebook with visualisations is on my GitHub.</p>
+    </div>
+  </div>
+  <div class="status-bar"><div class="status-bar-field" id="blog-status">2 posts</div></div>
+  <div class="resize-handle" onmousedown="startResize(event,'win-blog')"></div>
+</div>
+
+<!-- START MENU -->
+<div id="start-menu">
+  <div class="start-menu-sidebar"><span>OnurOS 98</span></div>
+  <div class="start-menu-items">
+    <div class="start-menu-item" onclick="openWindow('about');closeStartMenu();"><svg class="smi-icon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" fill="#ffffe0" stroke="#808080"/><text x="5" y="15" fill="#333" font-size="6" font-family="monospace">txt</text></svg><span>About Me</span></div>
+    <div class="start-menu-item" onclick="openWindow('resume');closeStartMenu();"><svg class="smi-icon" viewBox="0 0 24 24"><path d="M4 1H16L20 5V23H4Z" fill="#fff" stroke="#808080"/><rect x="7" y="7" width="10" height="1" fill="#d00"/></svg><span>Resume</span></div>
+    <div class="start-menu-item" onclick="openWindow('bio');closeStartMenu();"><svg class="smi-icon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" fill="#ffffe0" stroke="#808080"/><text x="5" y="15" fill="#333" font-size="6" font-family="serif">Bio</text></svg><span>Biography</span></div>
+    <div class="start-menu-item" onclick="openWindow('teletext');closeStartMenu();"><svg class="smi-icon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="16" rx="1" fill="#222" stroke="#808080"/><text x="5" y="14" fill="#0ff" font-size="7" font-family="monospace">TXT</text></svg><span>Teletext Art</span></div>
+    <hr class="start-menu-sep">
+    <div class="start-menu-item" onclick="openWindow('links');closeStartMenu();"><svg class="smi-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#4169e1"/><ellipse cx="12" cy="12" rx="5" ry="9" fill="none" stroke="#fff" stroke-width="0.8"/><line x1="3" y1="12" x2="21" y2="12" stroke="#fff" stroke-width="0.8"/></svg><span>Internet Links</span></div>
+    <div class="start-menu-item" onclick="openWindow('blog');closeStartMenu();"><svg class="smi-icon" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" fill="#800000" rx="1"/><text x="5" y="16" fill="#fff" font-size="10" font-weight="bold">B</text></svg><span>Blog</span></div>
+  </div>
+</div>
+
+<!-- TASKBAR -->
+<div id="taskbar">
+  <button id="start-btn" onclick="toggleStartMenu()">
+    <svg class="win-logo" viewBox="0 0 16 16"><rect x="1" y="1" width="6" height="6" fill="#ff0000"/><rect x="9" y="1" width="6" height="6" fill="#00ff00"/><rect x="1" y="9" width="6" height="6" fill="#0000ff"/><rect x="9" y="9" width="6" height="6" fill="#ffff00"/></svg>
+    Start
+  </button>
+  <div class="taskbar-divider"></div>
+  <div id="taskbar-windows"></div>
+  <div class="taskbar-divider"></div>
+  <div id="clock"></div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+let zCounter=100;const windows={};
+const windowTitles={about:'about_me.txt',resume:'Resume.pdf',bio:'Biography',teletext:'Teletext Art',links:'Links',blog:'Blog'};
+(function boot(){const bar=document.getElementById('boot-bar'),text=document.getElementById('boot-text');const msgs=['Loading OnurOS 98...','Initializing semantic layer...','Running dbt models...','Connecting to data warehouse...','Loading desktop...'];let step=0;const iv=setInterval(()=>{if(step<msgs.length){text.textContent=msgs[step];bar.style.width=((step+1)/msgs.length*100)+'%';step++}else{clearInterval(iv);setTimeout(()=>{document.getElementById('boot-screen').classList.add('fade-out');setTimeout(()=>{document.getElementById('boot-screen').style.display='none';openWindow('about')},500)},400)}},500)})();
+function updateClock(){const n=new Date(),h=n.getHours(),m=n.getMinutes().toString().padStart(2,'0'),ap=h>=12?'PM':'AM';document.getElementById('clock').textContent=(h%12||12)+':'+m+' '+ap}updateClock();setInterval(updateClock,30000);
+function selectIcon(el){document.querySelectorAll('.desktop-icon').forEach(i=>i.classList.remove('selected'));el.classList.add('selected')}
+document.getElementById('desktop').addEventListener('click',function(e){if(e.target===this)document.querySelectorAll('.desktop-icon').forEach(i=>i.classList.remove('selected'))});
+function openWindow(id){const w=document.getElementById('win-'+id);if(!w)return;w.classList.remove('hidden');bringToFront(id);windows[id]=true;updateTaskbar()}
+function closeWindow(id){const w=document.getElementById('win-'+id);if(!w)return;w.classList.add('hidden');w.classList.remove('maximized');delete windows[id];updateTaskbar()}
+function minimizeWindow(id){const w=document.getElementById('win-'+id);if(!w)return;w.classList.add('hidden');updateTaskbar()}
+function maximizeWindow(id){const w=document.getElementById('win-'+id);if(!w)return;w.classList.toggle('maximized')}
+function bringToFront(id){zCounter++;const w=document.getElementById('win-'+id);if(w){w.style.zIndex=zCounter;document.querySelectorAll('.window').forEach(x=>x.classList.add('inactive'));w.classList.remove('inactive')}updateTaskbar()}
+function focusOrMinimize(id){const w=document.getElementById('win-'+id);if(!w)return;if(w.classList.contains('hidden')){w.classList.remove('hidden');bringToFront(id)}else if(!w.classList.contains('inactive'))minimizeWindow(id);else bringToFront(id)}
+function updateTaskbar(){const c=document.getElementById('taskbar-windows');c.innerHTML='';for(const id in windows){const w=document.getElementById('win-'+id),active=w&&!w.classList.contains('hidden')&&!w.classList.contains('inactive');const b=document.createElement('button');b.className='taskbar-btn'+(active?' active':'');b.innerHTML='<span>'+windowTitles[id]+'</span>';b.onclick=()=>focusOrMinimize(id);c.appendChild(b)}}
+document.getElementById('desktop').addEventListener('mousedown',function(e){if(e.target===this||e.target.classList.contains('desktop-icon')||e.target.closest('.desktop-icon')){document.querySelectorAll('.window').forEach(w=>w.classList.add('inactive'));updateTaskbar()}});
+document.addEventListener('mousedown',function(e){const w=e.target.closest('.window');if(w)bringToFront(w.id.replace('win-',''))});
+let dragState=null;
+function startDrag(e,winId){const w=document.getElementById(winId);if(w.classList.contains('maximized'))return;dragState={el:w,startX:e.clientX-w.offsetLeft,startY:e.clientY-w.offsetTop};e.preventDefault()}
+document.addEventListener('mousemove',function(e){if(dragState){dragState.el.style.left=(e.clientX-dragState.startX)+'px';dragState.el.style.top=(e.clientY-dragState.startY)+'px'}if(resizeState){resizeState.el.style.width=Math.max(200,e.clientX-resizeState.el.offsetLeft)+'px';resizeState.el.style.height=Math.max(120,e.clientY-resizeState.el.offsetTop)+'px'}});
+document.addEventListener('mouseup',function(){dragState=null;resizeState=null});
+let resizeState=null;
+function startResize(e,winId){const w=document.getElementById(winId);if(w.classList.contains('maximized'))return;resizeState={el:w};e.preventDefault();e.stopPropagation()}
+function toggleStartMenu(){document.getElementById('start-menu').classList.toggle('visible');document.getElementById('start-btn').classList.toggle('active')}
+function closeStartMenu(){document.getElementById('start-menu').classList.remove('visible');document.getElementById('start-btn').classList.remove('active')}
+document.addEventListener('click',function(e){if(!e.target.closest('#start-menu')&&!e.target.closest('#start-btn'))closeStartMenu()});
+function showBlogPost(postId,tabEl){document.querySelectorAll('.blog-post').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.blog-tab').forEach(t=>t.classList.remove('active'));document.getElementById('blog-'+postId).classList.add('active');if(tabEl)tabEl.classList.add('active');const s=document.getElementById('blog-status');s.textContent=postId==='index'?'2 posts':postId==='post1'?'How To Develop A Profitable App':'Collatz sequence'}
+document.addEventListener('touchstart',function(e){const tb=e.target.closest('.title-bar');if(tb){const w=tb.closest('.window');if(w&&!w.classList.contains('maximized')){const t=e.touches[0];dragState={el:w,st
