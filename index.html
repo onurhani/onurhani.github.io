@@ -240,9 +240,9 @@
     <svg class="icon-img" viewBox="0 0 32 32" fill="none"><path d="M6 2H22L26 6V30H6Z" fill="#fff" stroke="#808080"/><path d="M22 2V6H26" fill="#c0c0c0" stroke="#808080"/><rect x="9" y="9" width="14" height="1.5" fill="#d00"/><rect x="9" y="12" width="12" height="1" fill="#808080"/><rect x="9" y="14.5" width="14" height="1" fill="#808080"/><rect x="9" y="17" width="10" height="1" fill="#808080"/><rect x="9" y="19.5" width="14" height="1" fill="#808080"/><rect x="9" y="22" width="11" height="1" fill="#808080"/><rect x="9" y="24.5" width="14" height="1" fill="#808080"/></svg>
     <span class="icon-label">Resume.pdf</span>
   </div>
-  <div class="desktop-icon" ondblclick="openWindow('bio')" onclick="selectIcon(this)">
-    <svg class="icon-img" viewBox="0 0 32 32" fill="none"><rect x="2" y="4" width="28" height="24" rx="1" fill="#ffffe0" stroke="#808080"/><line x1="6" y1="10" x2="26" y2="10" stroke="#c0c0c0" stroke-width="0.5"/><line x1="6" y1="14" x2="26" y2="14" stroke="#c0c0c0" stroke-width="0.5"/><line x1="6" y1="18" x2="26" y2="18" stroke="#c0c0c0" stroke-width="0.5"/><line x1="6" y1="22" x2="26" y2="22" stroke="#c0c0c0" stroke-width="0.5"/><text x="6" y="13" fill="#000080" font-size="5" font-family="serif">Bio</text><text x="6" y="17.5" fill="#333" font-size="3.5" font-family="sans-serif">my story...</text></svg>
-    <span class="icon-label">Biography</span>
+  <div class="desktop-icon" ondblclick="openWindow('projects')" onclick="selectIcon(this)">
+    <svg class="icon-img" viewBox="0 0 32 32" fill="none"><path d="M2 8 Q2 6 4 6 L13 6 L15 4 L28 4 Q30 4 30 6 L30 26 Q30 28 28 28 L4 28 Q2 28 2 26 Z" fill="#f0c040" stroke="#808080"/><path d="M2 10 L30 10 L30 26 Q30 28 28 28 L4 28 Q2 28 2 26 Z" fill="#f8d860" stroke="#808080"/></svg>
+    <span class="icon-label">Projects</span>
   </div>
   <div class="desktop-icon" ondblclick="openWindow('teletext')" onclick="selectIcon(this)">
     <svg class="icon-img" viewBox="0 0 32 32" fill="none"><rect x="2" y="4" width="28" height="22" rx="2" fill="#222" stroke="#808080"/><rect x="4" y="6" width="24" height="18" fill="#000"/><text x="6" y="14" fill="#0ff" font-size="5" font-family="monospace" font-weight="bold">TEXT</text><text x="6" y="20" fill="#ff0" font-size="4" font-family="monospace">ART</text><rect x="12" y="26" width="8" height="2" fill="#808080"/></svg>
@@ -289,32 +289,19 @@
   <div class="resize-handle" onmousedown="startResize(event,'win-resume')"></div>
 </div>
 
-<!-- BIOGRAPHY -->
-<div class="window hidden" id="win-bio" style="width:520px;height:460px;top:50px;left:120px;z-index:10;">
-  <div class="title-bar" onmousedown="startDrag(event,'win-bio')">
-    <svg class="title-bar-icon" viewBox="0 0 16 16"><rect x="1" y="2" width="14" height="12" rx="1" fill="#ffffe0" stroke="#808080" stroke-width="0.5"/></svg>
-    <span class="title-bar-text">biography.txt - Notepad</span>
-    <div class="title-bar-controls"><button onclick="minimizeWindow('bio')">_</button><button onclick="maximizeWindow('bio')">□</button><button onclick="closeWindow('bio')">×</button></div>
+<!-- PROJECTS — loaded from projects/*.md -->
+<div class="window hidden" id="win-projects" style="width:540px;height:460px;top:50px;left:120px;z-index:10;">
+  <div class="title-bar" onmousedown="startDrag(event,'win-projects')">
+    <svg class="title-bar-icon" viewBox="0 0 16 16"><path d="M1 4 Q1 3 2 3 L6 3 L7 2 L14 2 Q15 2 15 3 L15 13 Q15 14 14 14 L2 14 Q1 14 1 13 Z" fill="#f0c040" stroke="#808080" stroke-width="0.5"/><path d="M1 5 L15 5 L15 13 Q15 14 14 14 L2 14 Q1 14 1 13 Z" fill="#f8d860" stroke="#808080" stroke-width="0.5"/></svg>
+    <span class="title-bar-text">Projects</span>
+    <div class="title-bar-controls"><button onclick="minimizeWindow('projects')">_</button><button onclick="maximizeWindow('projects')">□</button><button onclick="closeWindow('projects')">×</button></div>
   </div>
-  <div class="window-body" style="font-family:'Courier New',monospace;font-size:12px;">
-    <h2>Background &amp; Foundation</h2>
-    <p>I started with a strong engineering and project management foundation. I studied Industrial Engineering at Bilkent University, which shaped how I think about systems, constraints, dependencies, and optimisation.</p>
-    <p>When I moved to Berlin, I chose a Master's in Project Management &amp; Data Science — not to become a pure data scientist, but because I believed every role would need to be data-literate to be effective.</p>
-    <h2>Casper — Discovering Analytics Engineering</h2>
-    <p>Casper was a defining moment. It was my first exposure to the modern data stack: AWS (S3 + Redshift), dbt, and Looker. I owned the Marketing Data Mart, standardising data from multiple channels and building a semantic layer in Looker that became the single source of truth.</p>
-    <p>This work went beyond dashboards — it involved defining what metrics mean, how they should be calculated, and how they should be consistently interpreted. Casper was one of the earliest dbt adopters, and this let me deeply internalise what analytics engineering really is.</p>
-    <h2>Tier Mobility — Scale, Pressure, and Accountability</h2>
-    <p>Tier was hyper-growth: massive data volume, small team, extreme pace. The company generated large-scale IoT event data and billing systems producing over 1 million invoices per month at peak.</p>
-    <p>I naturally became involved with the CFO and finance leadership, audit preparation, and investor reporting for funding rounds. This taught me how critical analytics engineering becomes when trust, money, and external scrutiny are involved.</p>
-    <h2>Contentful — Maturity, Influence, and Structure</h2>
-    <p>At Contentful, progress required influence, persuasion, and patience rather than speed. I focused on refactoring core ARR models, setting up end-to-end month-end closing, and founding a Data Steering Committee aligning Finance, Sales, Product, and Marketing.</p>
-    <p>This role matured me significantly in organisational impact — how to introduce governance and architectural improvements in environments where change isn't naturally welcomed.</p>
-    <h2>Overall Perspective</h2>
-    <p>Across all roles, a consistent theme: turning raw data into trusted analytical truth, designing systems that balance speed, correctness, and trust, and operating at the intersection of engineering, analytics, and business.</p>
-    <p>As AI starts querying data directly, the importance of well-defined semantics, stable models, and clear ownership only increases. My motivation is to build platforms that people <i>and machines</i> can trust.</p>
+  <div class="window-body">
+    <div class="blog-nav" id="projects-nav"></div>
+    <div id="projects-content" class="blog-content"></div>
   </div>
-  <div class="status-bar"><div class="status-bar-field">biography.txt</div></div>
-  <div class="resize-handle" onmousedown="startResize(event,'win-bio')"></div>
+  <div class="status-bar"><div class="status-bar-field" id="projects-status">2 projects</div></div>
+  <div class="resize-handle" onmousedown="startResize(event,'win-projects')"></div>
 </div>
 
 <!-- TELETEXT -->
@@ -365,9 +352,9 @@
       <li style="margin:8px 0"><a href="mailto:onurhan.irkin@gmail.com">Email</a><span style="color:var(--win-dark)"> — onurhan.irkin@gmail.com</span></li>
     </ul>
     <hr class="divider">
-    <h2>Recent Projects</h2>
+    <h2>Projects</h2>
     <ul style="list-style:none;margin-left:0;">
-      <li style="margin:8px 0"><a href="https://github.com/onurhani/dog-api-pipeline" target="_blank">Dog API Pipeline</a><span style="color:var(--win-dark)"> — dlt + Airflow + DuckDB</span></li>
+      <li style="margin:8px 0"><a href="#" onclick="closeWindow('links');openWindow('projects');return false;">Open Projects folder</a></li>
     </ul>
   </div>
   <div class="status-bar"><div class="status-bar-field">Done</div></div>
@@ -395,7 +382,7 @@
   <div class="start-menu-items">
     <div class="start-menu-item" onclick="openWindow('about');closeStartMenu();"><svg class="smi-icon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" fill="#ffffe0" stroke="#808080"/><text x="5" y="15" fill="#333" font-size="6" font-family="monospace">txt</text></svg><span>About Me</span></div>
     <div class="start-menu-item" onclick="openWindow('resume');closeStartMenu();"><svg class="smi-icon" viewBox="0 0 24 24"><path d="M4 1H16L20 5V23H4Z" fill="#fff" stroke="#808080"/><rect x="7" y="7" width="10" height="1" fill="#d00"/></svg><span>Resume</span></div>
-    <div class="start-menu-item" onclick="openWindow('bio');closeStartMenu();"><svg class="smi-icon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" fill="#ffffe0" stroke="#808080"/><text x="5" y="15" fill="#333" font-size="6" font-family="serif">Bio</text></svg><span>Biography</span></div>
+    <div class="start-menu-item" onclick="openWindow('projects');closeStartMenu();"><svg class="smi-icon" viewBox="0 0 24 24"><path d="M2 6 Q2 4 4 4 L10 4 L12 2 L20 2 Q22 2 22 4 L22 20 Q22 22 20 22 L4 22 Q2 22 2 20 Z" fill="#f0c040" stroke="#808080"/><path d="M2 8 L22 8 L22 20 Q22 22 20 22 L4 22 Q2 22 2 20 Z" fill="#f8d860" stroke="#808080"/></svg><span>Projects</span></div>
     <div class="start-menu-item" onclick="openWindow('teletext');closeStartMenu();"><svg class="smi-icon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="16" rx="1" fill="#222" stroke="#808080"/><text x="5" y="14" fill="#0ff" font-size="7" font-family="monospace">TXT</text></svg><span>Teletext Art</span></div>
     <hr class="start-menu-sep">
     <div class="start-menu-item" onclick="openWindow('links');closeStartMenu();"><svg class="smi-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#4169e1"/><ellipse cx="12" cy="12" rx="5" ry="9" fill="none" stroke="#fff" stroke-width="0.8"/><line x1="3" y1="12" x2="21" y2="12" stroke="#fff" stroke-width="0.8"/></svg><span>Internet Links</span></div>
@@ -422,10 +409,16 @@ const POSTS = [
   {id:'post2', file:'posts/post2.md', tab:'Collatz',         title:'Collatz sequence (or Hailstone sequence)', date:'18 Jun 2019', summary:'Creating the Collatz sequence with Python.'},
 ];
 
+// ─── Projects config — add new projects here ─────────────────────────────────
+const PROJECTS = [
+  {id:'dog-api', file:'projects/dog-api-pipeline.md', tab:'Dog API Pipeline', title:'Dog API Pipeline',   stack:'dlt · Airflow · DuckDB'},
+  {id:'predict', file:'projects/predict-may.md',       tab:'Predict May',      title:'Predict May',        stack:'Python · dbt · DuckDB · MotherDuck'},
+];
+
 // ─── Window management ────────────────────────────────────────────────────────
 let zCounter = 100;
 const windows = {};
-const windowTitles = {about:'about_me.txt', resume:'Resume.pdf', bio:'Biography', teletext:'Teletext Art', links:'Links', blog:'Blog'};
+const windowTitles = {about:'about_me.txt', resume:'Resume.pdf', projects:'Projects', teletext:'Teletext Art', links:'Links', blog:'Blog'};
 
 function openWindow(id){const w=document.getElementById('win-'+id);if(!w)return;w.classList.remove('hidden');bringToFront(id);windows[id]=true;updateTaskbar()}
 function closeWindow(id){const w=document.getElementById('win-'+id);if(!w)return;w.classList.add('hidden');w.classList.remove('maximized');delete windows[id];updateTaskbar()}
@@ -510,6 +503,62 @@ function showBlogPost(postId){
 }
 
 initBlog();
+
+// ─── Projects ─────────────────────────────────────────────────────────────────
+const projectCache = {};
+
+function initProjects(){
+  const nav=document.getElementById('projects-nav');
+  nav.innerHTML='';
+  const idxBtn=document.createElement('button');
+  idxBtn.className='blog-tab active'; idxBtn.id='proj-tab-index'; idxBtn.textContent='Index';
+  idxBtn.onclick=()=>showProjectIndex();
+  nav.appendChild(idxBtn);
+  PROJECTS.forEach(p=>{
+    const btn=document.createElement('button');
+    btn.className='blog-tab'; btn.id='proj-tab-'+p.id; btn.textContent=p.tab;
+    btn.onclick=()=>showProject(p.id);
+    nav.appendChild(btn);
+  });
+  showProjectIndex();
+}
+
+function showProjectIndex(){
+  document.querySelectorAll('#projects-nav .blog-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('proj-tab-index').classList.add('active');
+  let html=`<h1 style="border-bottom:2px solid var(--win-dark);margin-bottom:8px;">Projects</h1>`;
+  PROJECTS.forEach(p=>{
+    html+=`<div style="margin-bottom:12px;">`
+      +`<p><b><a href="#" onclick="showProject('${p.id}');return false;">${p.title}</a></b></p>`
+      +`<p style="color:#808080;font-size:11px;">${p.stack}</p></div>`
+      +`<hr style="border:none;border-top:1px solid #808080;margin:8px 0;">`;
+  });
+  document.getElementById('projects-content').innerHTML=html;
+  document.getElementById('projects-status').textContent=PROJECTS.length+' projects';
+}
+
+function showProject(projId){
+  const proj=PROJECTS.find(p=>p.id===projId);
+  if(!proj)return;
+  document.querySelectorAll('#projects-nav .blog-tab').forEach(t=>t.classList.remove('active'));
+  const tab=document.getElementById('proj-tab-'+projId);
+  if(tab)tab.classList.add('active');
+  document.getElementById('projects-status').textContent=proj.title;
+  const content=document.getElementById('projects-content');
+  const backLink='<p style="margin-bottom:8px;"><a href="#" onclick="showProjectIndex();return false;">&lt; Back to index</a></p>';
+  if(projectCache[projId]){content.innerHTML=backLink+projectCache[projId];return}
+  content.innerHTML='<p>Loading...</p>';
+  fetch(proj.file)
+    .then(r=>r.text())
+    .then(md=>{
+      const html=(typeof marked!=='undefined')?(marked.parse||marked)(md):`<pre>${md}</pre>`;
+      projectCache[projId]=html;
+      content.innerHTML=backLink+html;
+    })
+    .catch(()=>{content.innerHTML=backLink+'<p>[Error loading project]</p>'});
+}
+
+initProjects();
 
 // ─── Clock ────────────────────────────────────────────────────────────────────
 function updateClock(){const n=new Date(),h=n.getHours(),m=n.getMinutes().toString().padStart(2,'0'),ap=h>=12?'PM':'AM';document.getElementById('clock').textContent=(h%12||12)+':'+m+' '+ap}
