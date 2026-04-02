@@ -1,0 +1,43 @@
+Onurhan Irkin
+==============================
+Analytics Engineer
+Berlin, Germany
+
+onurhan.irkin@gmail.com
+github.com/onurhani
+linkedin.com/in/onur-irkin
+
+------------------------------
+
+Analytics Engineer with 6+ years of experience
+turning raw, queryable data into trusted
+analytical truth.
+
+I build the systems that make data trustworthy:
+semantic layers, governance frameworks, and
+transformation pipelines that serve both humans
+and AI.
+
+------------------------------
+
+What drives me:
+
+As AI starts querying data directly,
+well-defined semantics and clear ownership
+become critical. Bad metric definitions and
+undocumented models become hallucination risks
+at scale.
+
+I position analytics engineering as the trust
+foundation for AI-driven decision making.
+The semantic layer is not optional but the
+interface between messy reality and reliable
+answers.
+
+My motivation is to build analytics platforms
+that people *and machines* can trust and to
+take ownership of analytical truth where
+accuracy genuinely matters.
+
+==============================
+EOF

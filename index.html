@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Onur Irkin</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23008080'/><text x='2' y='13' font-size='13' fill='white'>O</text></svg>">
+<script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
 <style>
   @font-face {
     font-family: 'W95FA';
@@ -173,7 +174,7 @@
   }
   .win-btn:active { border-top-color: var(--win-darker); border-left-color: var(--win-darker); border-bottom-color: var(--win-lighter); border-right-color: var(--win-lighter); }
   .resume-body iframe { flex: 1; width: 100%; border: none; }
-  .blog-nav { display: flex; gap: 4px; margin-bottom: 8px; }
+  .blog-nav { display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; }
   .blog-tab {
     padding: 2px 10px; font-family: inherit; font-size: 11px; background: var(--win-bg);
     border-top: 2px solid var(--win-lighter); border-left: 2px solid var(--win-lighter);
@@ -183,12 +184,18 @@
     border-top-color: var(--win-darker); border-left-color: var(--win-darker);
     border-bottom-color: var(--win-lighter); border-right-color: var(--win-lighter); font-weight: bold;
   }
-  .blog-post { display: none; } .blog-post.active { display: block; }
-  .blog-post pre {
-    background: #f0f0f0; border: 1px solid var(--win-dark); padding: 6px 8px;
-    font-family: 'Courier New', monospace; font-size: 11px; overflow-x: auto; margin: 6px 0; white-space: pre-wrap;
-  }
-  .blog-post code { font-family: 'Courier New', monospace; font-size: 11px; background: #f0f0f0; padding: 0 3px; }
+  .blog-content { user-select: text; -webkit-user-select: text; }
+  .blog-content h1 { font-size: 14px; margin: 0 0 4px; border-bottom: 1px solid var(--win-dark); padding-bottom: 2px; }
+  .blog-content h2 { font-size: 13px; margin: 10px 0 4px; }
+  .blog-content p { margin: 4px 0; }
+  .blog-content ul, .blog-content ol { margin: 4px 0 4px 20px; }
+  .blog-content li { margin: 2px 0; }
+  .blog-content pre { background: #f0f0f0; border: 1px solid var(--win-dark); padding: 6px 8px; font-family: 'Courier New', monospace; font-size: 11px; overflow-x: auto; margin: 6px 0; white-space: pre-wrap; }
+  .blog-content code { font-family: 'Courier New', monospace; font-size: 11px; background: #f0f0f0; padding: 0 2px; }
+  .blog-content pre code { background: none; padding: 0; }
+  .blog-content em { font-style: italic; color: var(--win-dark); }
+  .blog-content a { color: var(--win-link); }
+  .blog-content hr { border: none; border-top: 1px solid var(--win-dark); margin: 8px 0; }
   .window-body::-webkit-scrollbar { width: 16px; }
   .window-body::-webkit-scrollbar-track { background: repeating-conic-gradient(var(--win-bg) 0% 25%, #fff 0% 50%) 0 0 / 2px 2px; }
   .window-body::-webkit-scrollbar-thumb {
@@ -217,6 +224,7 @@
 </style>
 </head>
 <body>
+
 <div id="boot-screen">
   <div class="boot-logo"><span style="color:#fff;font-weight:bold;">OnurOS 98</span><br><span style="font-size:12px;color:#808080;">Personal Edition</span></div>
   <div class="boot-bar-container"><div class="boot-bar" id="boot-bar"></div></div>
@@ -250,66 +258,19 @@
   </div>
 </div>
 
-<!-- ABOUT ME (.txt) -->
+<!-- ABOUT ME — content loaded from about_me.txt -->
 <div class="window hidden" id="win-about" style="width:480px;height:400px;top:60px;left:140px;z-index:10;">
   <div class="title-bar" onmousedown="startDrag(event,'win-about')">
     <svg class="title-bar-icon" viewBox="0 0 16 16"><rect x="1" y="2" width="14" height="12" rx="1" fill="#ffffe0" stroke="#808080" stroke-width="0.5"/></svg>
     <span class="title-bar-text">about_me.txt - Notepad</span>
     <div class="title-bar-controls"><button onclick="minimizeWindow('about')">_</button><button onclick="maximizeWindow('about')">□</button><button onclick="closeWindow('about')">×</button></div>
   </div>
-  <div class="window-body" style="font-family:'Courier New',monospace;font-size:12px;line-height:1.7;white-space:pre-wrap;">Onurhan Irkin
-==============================
-Principal Analytics Engineer
-Berlin, Germany
-
-<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="07686972756f6669296e756c6e6947606a666e6b2964686a">[email&#160;protected]</a>
-github.com/onurhani
-linkedin.com/in/onur-irkin
-
-------------------------------
-
-Analytics Engineer with 6+ years of experience
-turning raw, queryable data into trusted
-analytical truth.
-
-I build the systems that make data trustworthy:
-semantic layers, governance frameworks, and
-transformation pipelines that serve both humans
-and AI.
-
-Core stack: dbt, Snowflake, BigQuery, SQL,
-Python, Looker, Metabase, AWS, Airflow, dlt
-
-Languages: English, German, Turkish
-
-------------------------------
-
-What drives me:
-
-As AI starts querying data directly,
-well-defined semantics and clear ownership
-become critical. Bad metric definitions and
-undocumented models become hallucination risks
-at scale.
-
-I position analytics engineering as the trust
-foundation for AI-driven decision making.
-The semantic layer is not optional — it is the
-interface between messy reality and reliable
-answers.
-
-My motivation is to build analytics platforms
-that people *and machines* can trust — and to
-take ownership of analytical truth where
-accuracy genuinely matters.
-
-==============================
-EOF</div>
+  <div class="window-body" id="about-content" style="font-family:'Courier New',monospace;font-size:12px;line-height:1.7;white-space:pre-wrap;">Loading...</div>
   <div class="status-bar"><div class="status-bar-field">about_me.txt</div><div class="status-bar-field" style="flex:0 0 auto;">EN · DE · TR</div></div>
   <div class="resize-handle" onmousedown="startResize(event,'win-about')"></div>
 </div>
 
-<!-- RESUME (PDF) -->
+<!-- RESUME — PDF served from .files/ -->
 <div class="window hidden" id="win-resume" style="width:600px;height:500px;top:30px;left:80px;z-index:10;">
   <div class="title-bar" onmousedown="startDrag(event,'win-resume')">
     <svg class="title-bar-icon" viewBox="0 0 16 16"><path d="M3 1H11L13 3V15H3Z" fill="#fff" stroke="#808080" stroke-width="0.5"/><rect x="5" y="5" width="6" height="1" fill="#d00"/></svg>
@@ -319,10 +280,10 @@ EOF</div>
   <div class="window-body resume-body">
     <div class="pdf-toolbar">
       <span>Onurhan_Irkin_CV.pdf</span>
-      <a class="win-btn" href="Onurhan_Irkin_CV.pdf" download>Save</a>
-      <a class="win-btn" href="Onurhan_Irkin_CV.pdf" target="_blank">Open in new tab</a>
+      <a class="win-btn" href=".files/Onurhan_Irkin_CV.pdf" download>Save</a>
+      <a class="win-btn" href=".files/Onurhan_Irkin_CV.pdf" target="_blank">Open in new tab</a>
     </div>
-    <iframe src="Onurhan_Irkin_CV.pdf" title="Resume PDF"></iframe>
+    <iframe src=".files/Onurhan_Irkin_CV.pdf" title="Resume PDF"></iframe>
   </div>
   <div class="status-bar"><div class="status-bar-field">Onurhan_Irkin_CV.pdf</div><div class="status-bar-field" style="flex:0 0 80px;">Page 1</div></div>
   <div class="resize-handle" onmousedown="startResize(event,'win-resume')"></div>
@@ -401,7 +362,7 @@ EOF</div>
     <ul style="list-style:none;margin-left:0;">
       <li style="margin:8px 0"><a href="https://github.com/onurhani" target="_blank">GitHub</a><span style="color:var(--win-dark)"> — github.com/onurhani</span></li>
       <li style="margin:8px 0"><a href="https://www.linkedin.com/in/onur-irkin/" target="_blank">LinkedIn</a><span style="color:var(--win-dark)"> — linkedin.com/in/onur-irkin</span></li>
-      <li style="margin:8px 0"><a href="/cdn-cgi/l/email-protection#46292833342e2728682f342d2f2806212b272f2a6825292b">Email</a><span style="color:var(--win-dark)"> — <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="117e7f646379707f3f78637a787f51767c70787d3f727e7c">[email&#160;protected]</a></span></li>
+      <li style="margin:8px 0"><a href="mailto:onurhan.irkin@gmail.com">Email</a><span style="color:var(--win-dark)"> — onurhan.irkin@gmail.com</span></li>
     </ul>
     <hr class="divider">
     <h2>Recent Projects</h2>
@@ -413,7 +374,7 @@ EOF</div>
   <div class="resize-handle" onmousedown="startResize(event,'win-links')"></div>
 </div>
 
-<!-- BLOG (inline with tabs) -->
+<!-- BLOG — posts loaded from posts/*.md -->
 <div class="window hidden" id="win-blog" style="width:540px;height:460px;top:45px;left:150px;z-index:10;">
   <div class="title-bar" onmousedown="startDrag(event,'win-blog')">
     <svg class="title-bar-icon" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="1" fill="#800000"/><text x="3" y="11" fill="#fff" font-size="7" font-weight="bold" font-family="sans-serif">B</text></svg>
@@ -421,70 +382,8 @@ EOF</div>
     <div class="title-bar-controls"><button onclick="minimizeWindow('blog')">_</button><button onclick="maximizeWindow('blog')">□</button><button onclick="closeWindow('blog')">×</button></div>
   </div>
   <div class="window-body">
-    <div class="blog-nav">
-      <button class="blog-tab active" onclick="showBlogPost('index',this)">Index</button>
-      <button class="blog-tab" onclick="showBlogPost('post1',this)">Profitable App</button>
-      <button class="blog-tab" onclick="showBlogPost('post2',this)">Collatz</button>
-    </div>
-    <div class="blog-post active" id="blog-index">
-      <h2 style="color:#800000;border-bottom:2px solid #800000;">onur's thinkspace</h2>
-      <p style="color:var(--win-dark);margin-bottom:12px;">Writing about data, analytics engineering, and things I find interesting.</p>
-      <hr class="divider">
-      <div class="section">
-        <p><b><a href="#" onclick="showBlogPost('post1',document.querySelectorAll('.blog-tab')[1]);return false;">How To Develop A Profitable App</a></b></p>
-        <p class="job-date">12 Jan 2020</p>
-        <p>A simple analysis to shed light on App Store and Google Store apps.</p>
-      </div>
-      <hr class="divider">
-      <div class="section">
-        <p><b><a href="#" onclick="showBlogPost('post2',document.querySelectorAll('.blog-tab')[2]);return false;">Collatz sequence (or Hailstone sequence)</a></b></p>
-        <p class="job-date">18 Jun 2019</p>
-        <p>Creating the Collatz sequence with Python.</p>
-      </div>
-    </div>
-    <div class="blog-post" id="blog-post1">
-      <p><a href="#" onclick="showBlogPost('index',document.querySelectorAll('.blog-tab')[0]);return false;">&lt; Back to index</a></p>
-      <h2>How To Develop A Profitable App</h2>
-      <p class="job-date">12 Jan 2020</p>
-      <hr class="divider">
-      <p>The goal of this project was to analyse data from the App Store and Google Play Store to understand what types of apps are likely to attract the most users — because in these markets, revenue is primarily driven by in-app ads, meaning more users equals more revenue.</p>
-      <p>The dataset included information on app categories, ratings, reviews, size, pricing, and installs across both platforms. I focused on free apps, since those are the ones that rely on ad-driven revenue models.</p>
-      <p><b>Key findings:</b></p>
-      <ul>
-        <li>Apps in the <b>Books and Reference</b>, <b>Communication</b>, and <b>Social</b> categories showed the highest average install counts across both stores.</li>
-        <li>The Google Play Store had significantly more apps and installs than the App Store, making it a better starting platform for reaching a wide audience.</li>
-        <li>Many categories appeared saturated with low-quality apps — an opportunity for well-built alternatives that deliver real value.</li>
-        <li>Games had the highest volume of apps, but also the most competition and lowest average rating.</li>
-      </ul>
-      <p>The recommendation: build a free app in an underserved but high-demand category (like books/reference), launch first on Google Play to maximise reach, then expand to the App Store once validated.</p>
-      <p>The analysis was done in Python using pandas, and the full notebook is available on my GitHub.</p>
-    </div>
-    <div class="blog-post" id="blog-post2">
-      <p><a href="#" onclick="showBlogPost('index',document.querySelectorAll('.blog-tab')[0]);return false;">&lt; Back to index</a></p>
-      <h2>Collatz sequence (or Hailstone sequence)</h2>
-      <p class="job-date">18 Jun 2019</p>
-      <hr class="divider">
-      <p>The Collatz conjecture is one of those beautifully simple unsolved problems in mathematics. Take any positive integer n. If it's even, divide it by 2. If it's odd, multiply by 3 and add 1. Repeat. The conjecture says you'll always eventually reach 1.</p>
-      <p>The sequence gets its nickname "Hailstone" because the numbers rise and fall unpredictably, like hailstones in a cloud, before eventually settling down.</p>
-      <p><b>The rules:</b></p>
-<pre>if n is even  ->  n / 2
-if n is odd   ->  3n + 1
-repeat until n = 1</pre>
-      <p><b>Example:</b> Starting with 6:</p>
-<pre>6 -> 3 -> 10 -> 5 -> 16 -> 8 -> 4 -> 2 -> 1</pre>
-      <p>I wrote a simple Python function to generate and visualise these sequences. What's interesting is how wildly different starting numbers can behave — some reach 1 quickly, others take hundreds of steps, rocketing up to enormous values before crashing back down.</p>
-<pre>def collatz(n):
-    sequence = [n]
-    while n != 1:
-        if n % 2 == 0:
-            n = n // 2
-        else:
-            n = 3 * n + 1
-        sequence.append(n)
-    return sequence</pre>
-      <p>Despite being so easy to state and implement, no one has been able to prove the Collatz conjecture holds for all numbers. Paul Erdos famously said: "Mathematics is not yet ready for such problems."</p>
-      <p>The full notebook with visualisations is on my GitHub.</p>
-    </div>
+    <div class="blog-nav" id="blog-nav"></div>
+    <div id="blog-content" class="blog-content"></div>
   </div>
   <div class="status-bar"><div class="status-bar-field" id="blog-status">2 posts</div></div>
   <div class="resize-handle" onmousedown="startResize(event,'win-blog')"></div>
@@ -516,13 +415,18 @@ repeat until n = 1</pre>
   <div id="clock"></div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-let zCounter=100;const windows={};
-const windowTitles={about:'about_me.txt',resume:'Resume.pdf',bio:'Biography',teletext:'Teletext Art',links:'Links',blog:'Blog'};
-(function boot(){const bar=document.getElementById('boot-bar'),text=document.getElementById('boot-text');const msgs=['Loading OnurOS 98...','Initializing semantic layer...','Running dbt models...','Connecting to data warehouse...','Loading desktop...'];let step=0;const iv=setInterval(()=>{if(step<msgs.length){text.textContent=msgs[step];bar.style.width=((step+1)/msgs.length*100)+'%';step++}else{clearInterval(iv);setTimeout(()=>{document.getElementById('boot-screen').classList.add('fade-out');setTimeout(()=>{document.getElementById('boot-screen').style.display='none';openWindow('about')},500)},400)}},500)})();
-function updateClock(){const n=new Date(),h=n.getHours(),m=n.getMinutes().toString().padStart(2,'0'),ap=h>=12?'PM':'AM';document.getElementById('clock').textContent=(h%12||12)+':'+m+' '+ap}updateClock();setInterval(updateClock,30000);
-function selectIcon(el){document.querySelectorAll('.desktop-icon').forEach(i=>i.classList.remove('selected'));el.classList.add('selected')}
-document.getElementById('desktop').addEventListener('click',function(e){if(e.target===this)document.querySelectorAll('.desktop-icon').forEach(i=>i.classList.remove('selected'))});
+<script>
+// ─── Posts config — add new posts here ───────────────────────────────────────
+const POSTS = [
+  {id:'post1', file:'posts/post1.md', tab:'Profitable App',  title:'How To Develop A Profitable App',        date:'12 Jan 2020', summary:'A simple analysis to shed light on App Store and Google Store apps.'},
+  {id:'post2', file:'posts/post2.md', tab:'Collatz',         title:'Collatz sequence (or Hailstone sequence)', date:'18 Jun 2019', summary:'Creating the Collatz sequence with Python.'},
+];
+
+// ─── Window management ────────────────────────────────────────────────────────
+let zCounter = 100;
+const windows = {};
+const windowTitles = {about:'about_me.txt', resume:'Resume.pdf', bio:'Biography', teletext:'Teletext Art', links:'Links', blog:'Blog'};
+
 function openWindow(id){const w=document.getElementById('win-'+id);if(!w)return;w.classList.remove('hidden');bringToFront(id);windows[id]=true;updateTaskbar()}
 function closeWindow(id){const w=document.getElementById('win-'+id);if(!w)return;w.classList.add('hidden');w.classList.remove('maximized');delete windows[id];updateTaskbar()}
 function minimizeWindow(id){const w=document.getElementById('win-'+id);if(!w)return;w.classList.add('hidden');updateTaskbar()}
@@ -530,16 +434,118 @@ function maximizeWindow(id){const w=document.getElementById('win-'+id);if(!w)ret
 function bringToFront(id){zCounter++;const w=document.getElementById('win-'+id);if(w){w.style.zIndex=zCounter;document.querySelectorAll('.window').forEach(x=>x.classList.add('inactive'));w.classList.remove('inactive')}updateTaskbar()}
 function focusOrMinimize(id){const w=document.getElementById('win-'+id);if(!w)return;if(w.classList.contains('hidden')){w.classList.remove('hidden');bringToFront(id)}else if(!w.classList.contains('inactive'))minimizeWindow(id);else bringToFront(id)}
 function updateTaskbar(){const c=document.getElementById('taskbar-windows');c.innerHTML='';for(const id in windows){const w=document.getElementById('win-'+id),active=w&&!w.classList.contains('hidden')&&!w.classList.contains('inactive');const b=document.createElement('button');b.className='taskbar-btn'+(active?' active':'');b.innerHTML='<span>'+windowTitles[id]+'</span>';b.onclick=()=>focusOrMinimize(id);c.appendChild(b)}}
+
+// ─── Boot sequence ────────────────────────────────────────────────────────────
+(function boot(){
+  const bar=document.getElementById('boot-bar'), text=document.getElementById('boot-text');
+  const msgs=['Loading OnurOS 98...','Initializing semantic layer...','Running dbt models...','Connecting to data warehouse...','Loading desktop...'];
+  let step=0;
+  const iv=setInterval(()=>{
+    if(step<msgs.length){text.textContent=msgs[step];bar.style.width=((step+1)/msgs.length*100)+'%';step++}
+    else{clearInterval(iv);setTimeout(()=>{document.getElementById('boot-screen').classList.add('fade-out');setTimeout(()=>{document.getElementById('boot-screen').style.display='none';openWindow('about')},500)},400)}
+  },500);
+})();
+
+// ─── Load about_me.txt ────────────────────────────────────────────────────────
+fetch('about_me.txt')
+  .then(r=>r.text())
+  .then(t=>{document.getElementById('about-content').textContent=t})
+  .catch(()=>{document.getElementById('about-content').textContent='[Error loading about_me.txt]'});
+
+// ─── Blog ─────────────────────────────────────────────────────────────────────
+const postCache = {};
+
+function initBlog(){
+  const nav=document.getElementById('blog-nav');
+  nav.innerHTML='';
+  const idxBtn=document.createElement('button');
+  idxBtn.className='blog-tab active'; idxBtn.id='blog-tab-index'; idxBtn.textContent='Index';
+  idxBtn.onclick=()=>showBlogIndex();
+  nav.appendChild(idxBtn);
+  POSTS.forEach(p=>{
+    const btn=document.createElement('button');
+    btn.className='blog-tab'; btn.id='blog-tab-'+p.id; btn.textContent=p.tab;
+    btn.onclick=()=>showBlogPost(p.id);
+    nav.appendChild(btn);
+  });
+  showBlogIndex();
+}
+
+function showBlogIndex(){
+  document.querySelectorAll('.blog-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('blog-tab-index').classList.add('active');
+  let html=`<h1 style="color:#800000;border-bottom:2px solid #800000;margin-bottom:8px;">onur's thinkspace</h1>`
+    +`<p style="color:#808080;margin-bottom:12px;">Writing about data, analytics engineering, and things I find interesting.</p>`
+    +`<hr style="border:none;border-top:1px solid #808080;margin:8px 0;">`;
+  POSTS.forEach(p=>{
+    html+=`<div style="margin-bottom:12px;">`
+      +`<p><b><a href="#" onclick="showBlogPost('${p.id}');return false;">${p.title}</a></b></p>`
+      +`<p style="color:#808080;font-size:11px;">${p.date}</p>`
+      +`<p>${p.summary}</p></div>`
+      +`<hr style="border:none;border-top:1px solid #808080;margin:8px 0;">`;
+  });
+  document.getElementById('blog-content').innerHTML=html;
+  document.getElementById('blog-status').textContent=POSTS.length+' posts';
+}
+
+function showBlogPost(postId){
+  const post=POSTS.find(p=>p.id===postId);
+  if(!post)return;
+  document.querySelectorAll('.blog-tab').forEach(t=>t.classList.remove('active'));
+  const tab=document.getElementById('blog-tab-'+postId);
+  if(tab)tab.classList.add('active');
+  document.getElementById('blog-status').textContent=post.title;
+  const content=document.getElementById('blog-content');
+  const backLink='<p style="margin-bottom:8px;"><a href="#" onclick="showBlogIndex();return false;">&lt; Back to index</a></p>';
+  if(postCache[postId]){content.innerHTML=backLink+postCache[postId];return}
+  content.innerHTML='<p>Loading...</p>';
+  fetch(post.file)
+    .then(r=>r.text())
+    .then(md=>{
+      const html=(typeof marked!=='undefined')?(marked.parse||marked)(md):`<pre>${md}</pre>`;
+      postCache[postId]=html;
+      content.innerHTML=backLink+html;
+    })
+    .catch(()=>{content.innerHTML=backLink+'<p>[Error loading post]</p>'});
+}
+
+initBlog();
+
+// ─── Clock ────────────────────────────────────────────────────────────────────
+function updateClock(){const n=new Date(),h=n.getHours(),m=n.getMinutes().toString().padStart(2,'0'),ap=h>=12?'PM':'AM';document.getElementById('clock').textContent=(h%12||12)+':'+m+' '+ap}
+updateClock();setInterval(updateClock,30000);
+
+// ─── Desktop icon selection ───────────────────────────────────────────────────
+function selectIcon(el){document.querySelectorAll('.desktop-icon').forEach(i=>i.classList.remove('selected'));el.classList.add('selected')}
+document.getElementById('desktop').addEventListener('click',function(e){if(e.target===this)document.querySelectorAll('.desktop-icon').forEach(i=>i.classList.remove('selected'))});
+
+// ─── Drag & resize ────────────────────────────────────────────────────────────
 document.getElementById('desktop').addEventListener('mousedown',function(e){if(e.target===this||e.target.classList.contains('desktop-icon')||e.target.closest('.desktop-icon')){document.querySelectorAll('.window').forEach(w=>w.classList.add('inactive'));updateTaskbar()}});
 document.addEventListener('mousedown',function(e){const w=e.target.closest('.window');if(w)bringToFront(w.id.replace('win-',''))});
-let dragState=null;
+
+let dragState=null, resizeState=null;
 function startDrag(e,winId){const w=document.getElementById(winId);if(w.classList.contains('maximized'))return;dragState={el:w,startX:e.clientX-w.offsetLeft,startY:e.clientY-w.offsetTop};e.preventDefault()}
-document.addEventListener('mousemove',function(e){if(dragState){dragState.el.style.left=(e.clientX-dragState.startX)+'px';dragState.el.style.top=(e.clientY-dragState.startY)+'px'}if(resizeState){resizeState.el.style.width=Math.max(200,e.clientX-resizeState.el.offsetLeft)+'px';resizeState.el.style.height=Math.max(120,e.clientY-resizeState.el.offsetTop)+'px'}});
-document.addEventListener('mouseup',function(){dragState=null;resizeState=null});
-let resizeState=null;
 function startResize(e,winId){const w=document.getElementById(winId);if(w.classList.contains('maximized'))return;resizeState={el:w};e.preventDefault();e.stopPropagation()}
+document.addEventListener('mousemove',function(e){
+  if(dragState){dragState.el.style.left=(e.clientX-dragState.startX)+'px';dragState.el.style.top=(e.clientY-dragState.startY)+'px'}
+  if(resizeState){resizeState.el.style.width=Math.max(200,e.clientX-resizeState.el.offsetLeft)+'px';resizeState.el.style.height=Math.max(120,e.clientY-resizeState.el.offsetTop)+'px'}
+});
+document.addEventListener('mouseup',function(){dragState=null;resizeState=null});
+
+// ─── Start menu ───────────────────────────────────────────────────────────────
 function toggleStartMenu(){document.getElementById('start-menu').classList.toggle('visible');document.getElementById('start-btn').classList.toggle('active')}
 function closeStartMenu(){document.getElementById('start-menu').classList.remove('visible');document.getElementById('start-btn').classList.remove('active')}
 document.addEventListener('click',function(e){if(!e.target.closest('#start-menu')&&!e.target.closest('#start-btn'))closeStartMenu()});
-function showBlogPost(postId,tabEl){document.querySelectorAll('.blog-post').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.blog-tab').forEach(t=>t.classList.remove('active'));document.getElementById('blog-'+postId).classList.add('active');if(tabEl)tabEl.classList.add('active');const s=document.getElementById('blog-status');s.textContent=postId==='index'?'2 posts':postId==='post1'?'How To Develop A Profitable App':'Collatz sequence'}
-document.addEventListener('touchstart',function(e){const tb=e.target.closest('.title-bar');if(tb){const w=tb.closest('.window');if(w&&!w.classList.contains('maximized')){const t=e.touches[0];dragState={el:w,st
+
+// ─── Touch drag support ───────────────────────────────────────────────────────
+document.addEventListener('touchstart',function(e){
+  const tb=e.target.closest('.title-bar');
+  if(tb){const w=tb.closest('.window');if(w&&!w.classList.contains('maximized')){const t=e.touches[0];dragState={el:w,startX:t.clientX-w.offsetLeft,startY:t.clientY-w.offsetTop};e.preventDefault()}}
+},{passive:false});
+document.addEventListener('touchmove',function(e){
+  if(dragState){const t=e.touches[0];dragState.el.style.left=(t.clientX-dragState.startX)+'px';dragState.el.style.top=(t.clientY-dragState.startY)+'px';e.preventDefault()}
+},{passive:false});
+document.addEventListener('touchend',function(){dragState=null});
+</script>
+</body>
+</html>
