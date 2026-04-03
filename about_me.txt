@@ -11,18 +11,38 @@ linkedin.com/in/onur-irkin
 
 I'm a data practitioner based in Berlin,
 with most of my work over the last 8+ years
-centred around analytics engineering.
+centred around analytics engineering. I've touched 
+most things across the data spectrum, from data 
+science to pipeline building, but I found myself 
+gravitating towards something more specific: 
+modelling data, structuring analytical warehouses, 
+and building the toolset around them using 
+the modern data stack.
 
-I studied data science, but early in my career
-I found myself gravitating towards something
-more specific: modelling data, structuring
-analytical warehouses, and building the toolset
-around them using the modern data stack.
-That became my craft, and it still is.
+Nowadays, most of my time goes to the most 
+life changing, character building experience 
+I've had so far: a little human being who showed up
+and turned our whole world upside down in a matter 
+of months. Beyond the incredible depth of feeling 
+and the completely new perspective on life, it 
+teaches me something very practical too. What being
+actually busy means. How to use every tiny window of
+free time with real focus and intention. How to 
+prioritise when you suddenly have a very clear 
+purpose to do everything better.
 
-Nowadays I spend a lot of time building data
-tools with the productivity boost of AI.
-Great time to have 20 side projects :) 
+In the data world, I'm currently most interested in
+how AI will reshape the analytics pipeline and
+semantic layer. Not just the tooling, but the deeper
+question: how to bring true purpose and meaning to 
+decisions made with data.
+
+Sometimes I make music and work on a couple of
+musical projects. It's mostly been a hands off
+keyboards, no screen experience for me, a very
+different aspect of life and doing. But nowadays
+I'm looking for where technology and my musical work
+might intersect.
 
 ==============================
 EOF
