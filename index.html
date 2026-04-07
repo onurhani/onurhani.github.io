@@ -244,7 +244,7 @@
     <svg class="icon-img" viewBox="0 0 32 32" fill="none"><path d="M2 8 Q2 6 4 6 L13 6 L15 4 L28 4 Q30 4 30 6 L30 26 Q30 28 28 28 L4 28 Q2 28 2 26 Z" fill="#f0c040" stroke="#808080"/><path d="M2 10 L30 10 L30 26 Q30 28 28 28 L4 28 Q2 28 2 26 Z" fill="#f8d860" stroke="#808080"/></svg>
     <span class="icon-label">Projects</span>
   </div>
-  <div class="desktop-icon" ondblclick="openWindow('teletext')" onclick="selectIcon(this)">
+  <div class="desktop-icon" ondblclick="openWindow('teletext')" onclick="selectIcon(this)" style="position:absolute;top:12px;right:12px;">
     <svg class="icon-img" viewBox="0 0 32 32" fill="none"><rect x="2" y="4" width="28" height="22" rx="2" fill="#222" stroke="#808080"/><rect x="4" y="6" width="24" height="18" fill="#000"/><text x="6" y="14" fill="#0ff" font-size="5" font-family="monospace" font-weight="bold">TEXT</text><text x="6" y="20" fill="#ff0" font-size="4" font-family="monospace">ART</text><rect x="12" y="26" width="8" height="2" fill="#808080"/></svg>
     <span class="icon-label">Teletext Art</span>
   </div>
@@ -305,34 +305,14 @@
 </div>
 
 <!-- TELETEXT -->
-<div class="window hidden" id="win-teletext" style="width:500px;height:400px;top:70px;left:160px;z-index:10;">
+<div class="window hidden" id="win-teletext" style="width:700px;height:560px;top:40px;left:100px;z-index:10;">
   <div class="title-bar" onmousedown="startDrag(event,'win-teletext')">
     <svg class="title-bar-icon" viewBox="0 0 16 16"><rect x="1" y="2" width="14" height="11" rx="1" fill="#222" stroke="#808080" stroke-width="0.5"/><text x="4" y="10" fill="#0ff" font-size="6" font-family="monospace">T</text></svg>
     <span class="title-bar-text">Teletext Art Generator</span>
     <div class="title-bar-controls"><button onclick="minimizeWindow('teletext')">_</button><button onclick="maximizeWindow('teletext')">□</button><button onclick="closeWindow('teletext')">×</button></div>
   </div>
-  <div class="window-body teletext-body">
-    <div class="tt-header">TELETEXT ART  PAGE 100</div>
-    <p class="tt-cyan">+======================================+</p>
-    <p class="tt-cyan">| <span class="tt-yellow">TELETEXT ART GENERATION PROJECT</span>     |</p>
-    <p class="tt-cyan">|======================================|</p>
-    <p class="tt-cyan">|                                      |</p>
-    <p class="tt-cyan">| <span class="tt-white">An exploration of retro teletext</span>     |</p>
-    <p class="tt-cyan">| <span class="tt-white">graphics using modern tools.</span>          |</p>
-    <p class="tt-cyan">|                                      |</p>
-    <p class="tt-cyan">| <span class="tt-green">Generating blocky, colorful art</span>      |</p>
-    <p class="tt-cyan">| <span class="tt-green">in the style of Ceefax, Oracle,</span>      |</p>
-    <p class="tt-cyan">| <span class="tt-green">and classic 80s/90s teletext.</span>        |</p>
-    <p class="tt-cyan">|                                      |</p>
-    <p class="tt-cyan">| <span class="tt-magenta">BLOCK CHARACTERS</span>                    |</p>
-    <p class="tt-cyan">|                                      |</p>
-    <p class="tt-cyan">| <span class="tt-yellow">Status:</span> <span class="tt-green">Work in progress</span>             |</p>
-    <p class="tt-cyan">|                                      |</p>
-    <p class="tt-cyan">+======================================+</p>
-    <br>
-    <p class="tt-white">This project explores generating teletext-style art using AI and code. More coming soon.</p>
-    <br>
-    <p class="tt-red">| <span class="tt-yellow">Check back for updates and interactive demos.</span></p>
+  <div class="window-body" style="padding:0;">
+    <iframe src="teletext.html" style="width:100%;height:100%;border:none;" title="Teletext Art Studio"></iframe>
   </div>
   <div class="resize-handle" onmousedown="startResize(event,'win-teletext')"></div>
 </div>
