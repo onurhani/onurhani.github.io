@@ -309,20 +309,15 @@
 </div>
 
 <!-- PREDICT MAY — football analytics dashboard -->
-<div class="window hidden" id="win-predictmay" style="width:560px;height:480px;top:55px;left:110px;z-index:10;">
+<div class="window hidden" id="win-predictmay" style="width:980px;height:620px;top:30px;left:60px;z-index:10;">
   <div class="title-bar" onmousedown="startDrag(event,'win-predictmay')">
     <svg class="title-bar-icon" viewBox="0 0 16 16"><defs><clipPath id="tb-fb-clip"><circle cx="8" cy="8" r="6"/></clipPath></defs><circle cx="8" cy="8" r="6" fill="#e8e8e8" stroke="#444" stroke-width="0.8"/><g clip-path="url(#tb-fb-clip)"><polygon points="8,5 10,6.8 9.3,9.3 6.7,9.3 6,6.8" fill="#222"/><polygon points="8,5 10.2,3.2 12.3,4.8 11.5,7.2 10,6.8" fill="#222" opacity="0.65"/><polygon points="10,6.8 11.5,7.2 13,9.5 11.5,11 9.3,9.3" fill="#222" opacity="0.65"/><polygon points="9.3,9.3 11.5,11 10.2,13 8,13.5 6.5,11.5" fill="#222" opacity="0.65"/><polygon points="6.7,9.3 6.5,11.5 4.8,13 3.5,11 5,9.5" fill="#222" opacity="0.65"/><polygon points="6,6.8 5,9.5 3.5,7.5 4.5,5 5.8,3.2 8,5" fill="#222" opacity="0.65"/></g></svg>
-    <span class="title-bar-text">Predict May — Süper Lig Dashboard</span>
+    <span class="title-bar-text">Predict May — Süper Lig 2025–26 Dashboard</span>
     <div class="title-bar-controls"><button onclick="minimizeWindow('predictmay')">_</button><button onclick="maximizeWindow('predictmay')">□</button><button onclick="closeWindow('predictmay')">×</button></div>
   </div>
-  <div class="window-body" style="display:flex;flex-direction:column;gap:0;padding:0;">
-    <div style="padding:6px 8px;background:#c0c0c0;border-bottom:2px solid #808080;display:flex;align-items:center;gap:8px;flex-shrink:0;">
-      <a href="predict-may/" target="_blank" style="color:#000080;font-weight:bold;font-size:11px;text-decoration:none;border:2px solid;border-top-color:#fff;border-left-color:#fff;border-bottom-color:#808080;border-right-color:#808080;padding:2px 8px;background:#c0c0c0;cursor:pointer;" onmouseover="this.style.background='#dfdfdf'" onmouseout="this.style.background='#c0c0c0'">⚽ Open Live Dashboard</a>
-      <span style="font-size:10px;color:#444;">· Monte Carlo · SPI model · 10,000 sims</span>
-    </div>
-    <div id="predictmay-content" style="flex:1;overflow:auto;padding:10px 12px;"></div>
+  <div class="window-body" style="padding:0;">
+    <iframe src="https://onurhani.github.io/predict-may/" style="width:100%;height:100%;border:none;" title="Predict May Dashboard" id="predictmay-iframe"></iframe>
   </div>
-  <div class="status-bar"><div class="status-bar-field" id="predictmay-status">Predict May · Python · dbt · DuckDB · MotherDuck</div></div>
   <div class="resize-handle" onmousedown="startResize(event,'win-predictmay')"></div>
 </div>
 
@@ -561,26 +556,6 @@ function showProject(projId){
 }
 
 initProjects();
-
-// ─── Predict May ──────────────────────────────────────────────────────────────
-let predictmayLoaded = false;
-function initPredictMay(){
-  if(predictmayLoaded)return;
-  predictmayLoaded=true;
-  const content=document.getElementById('predictmay-content');
-  content.innerHTML='<p>Loading...</p>';
-  fetch('projects/predict-may.md')
-    .then(r=>r.text())
-    .then(md=>{
-      const html=(typeof marked!=='undefined')?(marked.parse||marked)(md):`<pre>${md}</pre>`;
-      content.innerHTML=html;
-    })
-    .catch(()=>{content.innerHTML='<p>[Error loading project info]</p>'});
-}
-
-// Hook into openWindow to lazy-load predict-may content
-const _origOpenWindow=openWindow;
-openWindow=function(id){_origOpenWindow(id);if(id==='predictmay')initPredictMay();};
 
 // ─── Clock ────────────────────────────────────────────────────────────────────
 function updateClock(){const n=new Date(),h=n.getHours(),m=n.getMinutes().toString().padStart(2,'0'),ap=h>=12?'PM':'AM';document.getElementById('clock').textContent=(h%12||12)+':'+m+' '+ap}
