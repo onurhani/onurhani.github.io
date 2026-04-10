@@ -469,11 +469,6 @@
 
   <div class="title-bar">
     <div class="title-bar-text">⚽ Predict May — Süper Lig 2024–25 Projections</div>
-    <div class="title-bar-controls">
-      <button aria-label="Minimize"></button>
-      <button aria-label="Maximize"></button>
-      <button aria-label="Close" onclick="window.location.href='https://onurhani.github.io'"></button>
-    </div>
   </div>
 
   <div class="window-body">
@@ -680,6 +675,16 @@ fetch('https://onurhani.github.io/predict-may/data/dashboard.json')
   .then(data => render(data))
   .catch(() => render(MOCK));
 
+/* ── Team name corrections ──────────────────────────────── */
+const NAME_MAP = {
+  'Buyuksehyr':   'Başakşehir',
+  'Buyuksehir':   'Başakşehir',
+  'Basaksehir':   'Başakşehir',
+  'Goztep':       'Göztepe',
+  'Goztepe':      'Göztepe',
+};
+function fixName(n) { return NAME_MAP[n] || n; }
+
 /* ── Helpers ────────────────────────────────────────────── */
 function rolling4(arr) {
   return arr.map((_, i) => {
@@ -720,11 +725,15 @@ function render(data) {
   // Stats strip
   if (data.stats) {
     const s = data.stats;
+    // Compute 4-week accuracy from the last 4 weekly values (source of truth for the chart)
+    const wkArr = (data.accuracy && data.accuracy.weekly) || MOCK.accuracy.weekly;
+    const last4 = wkArr.slice(-4);
+    const computed4wk = Math.round(last4.reduce((a,b)=>a+b,0)/last4.length);
     document.getElementById('stats-strip').innerHTML = `
       <div class="stat-card">
         <div class="stat-accent" style="background:#27ae60;"></div>
         <div class="stat-label">4-Week Accuracy</div>
-        <div class="stat-value" style="color:#27ae60;">${s.accuracy_4wk}%</div>
+        <div class="stat-value" style="color:#27ae60;">${computed4wk}%</div>
         <div class="stat-sub">vs. 33% random baseline</div>
       </div>
       <div class="stat-card">
@@ -756,13 +765,14 @@ function render(data) {
     const t4c  = top4Color(t.top4);
     const rc   = relColor(t.rel);
     const fb   = t.highlight ? ' class="fb-row"' : '';
+    const displayName = fixName(t.name);
     tbody.innerHTML += `
       <tr${fb}>
         <td>${rank}</td>
         <td>
           <div class="team-cell">
             <span class="zone-stripe" style="background:${zc};"></span>
-            ${t.name}${t.highlight ? ' <span style="color:#e67e22;font-size:10px;">★</span>' : ''}
+            ${displayName}${t.highlight ? ' <span style="color:#e67e22;font-size:10px;">★</span>' : ''}
           </div>
         </td>
         <td style="font-weight:800;color:#111;">${t.pts}</td>
@@ -793,8 +803,8 @@ function render(data) {
   }
 
   const PRED_STYLES = {
-    H: { bg:"#dbeafe", color:"#1d4ed8", label: m => `${m.home} to win` },
-    A: { bg:"#fee2e2", color:"#b91c1c", label: m => `${m.away} to win` },
+    H: { bg:"#dbeafe", color:"#1d4ed8", label: m => `${fixName(m.home)} to win` },
+    A: { bg:"#fee2e2", color:"#b91c1c", label: m => `${fixName(m.away)} to win` },
     D: { bg:"#f3f4f6", color:"#374151", label: ()  => "Draw likely"    },
   };
   const container = document.getElementById("match-cards");
@@ -804,15 +814,17 @@ function render(data) {
     const showH = m.ph >= 15 ? `${m.ph}%` : "";
     const showD = m.pd >= 15 ? `${m.pd}%` : "";
     const showA = m.pa >= 15 ? `${m.pa}%` : "";
+    const home = fixName(m.home);
+    const away = fixName(m.away);
     container.innerHTML += `
       <div class="match-card">
         <div class="match-header">
-          <span class="match-team-name">${m.home}</span>
+          <span class="match-team-name">${home}</span>
           <div class="match-center">
             <span class="match-vs-label">vs</span>
             <span class="match-prediction-tag" style="background:${s.bg};color:${s.color};">▶ ${s.label(m)}</span>
           </div>
-          <span class="match-team-name away">${m.away}</span>
+          <span class="match-team-name away">${away}</span>
         </div>
         <div class="prob-bar-stack">
           <div class="prob-seg" style="flex:${m.ph};background:#2980b9;">${showH}</div>
