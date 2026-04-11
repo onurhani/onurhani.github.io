@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Predict May — Süper Lig Dashboard</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='13' font-size='13'>⚽</text></svg>">
+  <link rel="icon" href="../assets/pixelart_ball.png" type="image/png">
   <link rel="stylesheet" href="https://unpkg.com/98.css" />
   <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -669,10 +669,53 @@ const MOCK = {
   }
 };
 
+/* ── Normalize real JSON → internal format ──────────────── */
+function normalizeData(d) {
+  // Real JSON has standings[].team, current_pts, etc. — map to internal keys
+  if (!d.standings || !d.standings[0] || d.standings[0].name !== undefined) return d;
+  const wkObjs = (d.accuracy && d.accuracy.weekly) || [];
+  return {
+    meta: {
+      last_updated: d.meta && d.meta.updated_at,
+      matchday: d.meta && d.meta.matchday_current,
+      total_matchdays: d.meta && d.meta.matchday_total,
+      matches_remaining: d.meta && d.meta.matches_remaining_total,
+    },
+    stats: {
+      accuracy_4wk: d.accuracy && d.accuracy.rolling_4week_pct,
+      title_favorite: d.standings[0].team,
+      title_favorite_pct: d.standings[0].top4_pct,
+      matches_predicted: null,
+      overall_accuracy: d.accuracy && d.accuracy.overall_pct,
+      matches_remaining_total: d.meta && d.meta.matches_remaining_total,
+    },
+    standings: d.standings.map(t => ({
+      name: t.team,
+      pts: t.current_pts,
+      xpts: t.expected_pts,
+      likelyPos: t.likely_position,
+      top4: t.top4_pct,
+      rel: t.relegation_pct,
+      highlight: t.team === 'Fenerbahçe',
+    })),
+    next_matches: (d.next_matches || []).map(m => ({
+      home: m.home_team, away: m.away_team,
+      ph: m.prob_home, pd: m.prob_draw, pa: m.prob_away,
+      pred: m.predicted_result,
+    })),
+    accuracy: {
+      weekly: wkObjs.map(w => w.weekly_pct),
+      labels:  wkObjs.map(w => w.week_label),
+      next_matchday: d.meta && (d.meta.matchday_current + 1),
+      next_dates: null,
+    },
+  };
+}
+
 /* ── Load data ──────────────────────────────────────────── */
 fetch('https://onurhani.github.io/predict-may/data/dashboard.json')
   .then(r => { if (!r.ok) throw new Error('no data'); return r.json(); })
-  .then(data => render(data))
+  .then(data => render(normalizeData(data)))
   .catch(() => render(MOCK));
 
 /* ── Team name corrections ──────────────────────────────── */
