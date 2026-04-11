@@ -370,28 +370,41 @@
       transition: width 0.6s ease;
     }
 
-    /* ── Match cards ─────────────────────────────────────── */
+    /* ── Match cards grid ───────────────────────────────────── */
+    .match-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
     .match-card {
       background: var(--bg-card);
       border: 1px solid var(--border-soft);
-      padding: 11px 13px 10px;
-      margin-bottom: 7px;
+      padding: 9px 11px 8px;
       border-radius: 2px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
-    .match-card:last-child { margin-bottom: 0; }
+    .match-card.finished {
+      opacity: 0.65;
+    }
 
-    .match-header {
+    .match-teams {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 7px;
+      gap: 4px;
     }
 
     .match-team-name {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 800;
       color: var(--text);
-      width: 36%;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .match-team-name.away { text-align: right; }
 
@@ -399,7 +412,17 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 3px;
+      gap: 2px;
+      flex-shrink: 0;
+      min-width: 42px;
+    }
+
+    .match-score {
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: 1px;
+      line-height: 1;
     }
 
     .match-vs-label {
@@ -411,18 +434,47 @@
     }
 
     .match-prediction-tag {
-      font-size: 8px;
+      font-size: 7.5px;
       font-weight: 900;
       text-transform: uppercase;
-      letter-spacing: 0.6px;
-      padding: 2px 6px;
+      letter-spacing: 0.5px;
+      padding: 2px 5px;
       border-radius: 2px;
+      white-space: nowrap;
+    }
+
+    .match-result-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+    }
+
+    .match-result-tag {
+      font-size: 7.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 2px 5px;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+
+    .match-pred-note {
+      font-size: 7px;
+      color: var(--text-dim);
+      font-weight: 600;
+      text-align: right;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     /* ── Prob bar ────────────────────────────────────────── */
     .prob-bar-stack {
       display: flex;
-      height: 16px;
+      height: 14px;
       border-radius: 2px;
       overflow: hidden;
       gap: 1px;
@@ -432,7 +484,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 9px;
+      font-size: 8px;
       font-weight: 800;
       color: rgba(255,255,255,0.9);
       letter-spacing: 0.2px;
@@ -443,11 +495,11 @@
     .prob-bar-labels {
       display: flex;
       justify-content: space-between;
-      margin-top: 3px;
+      margin-top: 2px;
     }
 
     .prob-bar-label {
-      font-size: 8px;
+      font-size: 7.5px;
       color: var(--text-dim);
       font-weight: 600;
       text-transform: uppercase;
@@ -623,7 +675,7 @@
           <span class="section-title" id="matchday-title">Next Matchday</span>
           <span class="section-note" id="matchday-dates"></span>
         </div>
-        <div id="match-cards"></div>
+        <div class="match-grid" id="match-cards"></div>
       </div>
 
       <!-- Accuracy chart -->
@@ -725,15 +777,15 @@ const MOCK = {
     {"rank":18,"team":"Karagümrük","current_pts":20,"expected_pts":28.0,"likely_position":18,"top4_pct":0.0,"relegation_pct":85.8}
   ],
   "next_matches":[
-    {"home_team":"Beşiktaş","away_team":"Antalyaspor","match_date":null,"prob_home":60,"prob_draw":27,"prob_away":13,"predicted_result":"H"},
-    {"home_team":"Başakşehir","away_team":"Gençlerbirliği","match_date":null,"prob_home":48,"prob_draw":29,"prob_away":23,"predicted_result":"H"},
-    {"home_team":"Alanyaspor","away_team":"Trabzonspor","match_date":null,"prob_home":27,"prob_draw":29,"prob_away":44,"predicted_result":"A"},
-    {"home_team":"Kayserispor","away_team":"Fenerbahçe","match_date":null,"prob_home":31,"prob_draw":30,"prob_away":39,"predicted_result":"D"},
-    {"home_team":"Konyaspor","away_team":"Karagümrük","match_date":null,"prob_home":43,"prob_draw":30,"prob_away":27,"predicted_result":"D"},
-    {"home_team":"Göztepe","away_team":"Kasımpaşa","match_date":null,"prob_home":33,"prob_draw":31,"prob_away":36,"predicted_result":"D"},
-    {"home_team":"Galatasaray","away_team":"Kocaelispor","match_date":null,"prob_home":66,"prob_draw":26,"prob_away":8,"predicted_result":"H"},
-    {"home_team":"Eyüpspor","away_team":"Samsunspor","match_date":null,"prob_home":36,"prob_draw":32,"prob_away":32,"predicted_result":"D"},
-    {"home_team":"Rizespor","away_team":"Gaziantep","match_date":null,"prob_home":50,"prob_draw":29,"prob_away":21,"predicted_result":"H"}
+    {"home_team":"Beşiktaş","away_team":"Antalyaspor","match_date":null,"prob_home":42,"prob_draw":31,"prob_away":27,"predicted_result":"D","finished":true,"home_score":4,"away_score":2},
+    {"home_team":"Başakşehir","away_team":"Gençlerbirliği","match_date":null,"prob_home":48,"prob_draw":29,"prob_away":23,"predicted_result":"H","finished":true,"home_score":3,"away_score":0},
+    {"home_team":"Alanyaspor","away_team":"Trabzonspor","match_date":null,"prob_home":27,"prob_draw":29,"prob_away":44,"predicted_result":"A","finished":true,"home_score":1,"away_score":1},
+    {"home_team":"Kayserispor","away_team":"Fenerbahçe","match_date":null,"prob_home":31,"prob_draw":30,"prob_away":39,"predicted_result":"D","finished":false,"home_score":null,"away_score":null},
+    {"home_team":"Konyaspor","away_team":"Karagümrük","match_date":null,"prob_home":43,"prob_draw":30,"prob_away":27,"predicted_result":"D","finished":false,"home_score":null,"away_score":null},
+    {"home_team":"Göztepe","away_team":"Kasımpaşa","match_date":null,"prob_home":36,"prob_draw":32,"prob_away":32,"predicted_result":"D","finished":false,"home_score":null,"away_score":null},
+    {"home_team":"Galatasaray","away_team":"Kocaelispor","match_date":null,"prob_home":59,"prob_draw":27,"prob_away":14,"predicted_result":"H","finished":false,"home_score":null,"away_score":null},
+    {"home_team":"Eyüpspor","away_team":"Samsunspor","match_date":null,"prob_home":33,"prob_draw":31,"prob_away":36,"predicted_result":"D","finished":false,"home_score":null,"away_score":null},
+    {"home_team":"Rizespor","away_team":"Gaziantep","match_date":null,"prob_home":48,"prob_draw":29,"prob_away":23,"predicted_result":"H","finished":false,"home_score":null,"away_score":null}
   ]
 };
 
@@ -826,9 +878,9 @@ function render(data) {
     `Matchday ${meta.matchday_current + 1} Predictions`;
 
   const PRED = {
-    H: { bg:'rgba(59,139,235,0.18)', color:'#60a5fa', label: m => `${m.home_team} to win` },
-    A: { bg:'rgba(224,92,92,0.18)',  color:'#f87171', label: m => `${m.away_team} to win` },
-    D: { bg:'rgba(255,255,255,0.07)',color:'#94a3b8', label: ()  => 'Draw likely'           },
+    H: { bg:'rgba(59,139,235,0.18)', color:'#60a5fa', label: m => `${m.home_team} win` },
+    A: { bg:'rgba(224,92,92,0.18)',  color:'#f87171', label: m => `${m.away_team} win` },
+    D: { bg:'rgba(255,255,255,0.07)',color:'#94a3b8', label: ()  => 'Draw likely'       },
   };
   const container = document.getElementById('match-cards');
   container.innerHTML = '';
@@ -837,27 +889,55 @@ function render(data) {
     const showH = m.prob_home >= 15 ? `${m.prob_home}%` : '';
     const showD = m.prob_draw >= 15 ? `${m.prob_draw}%` : '';
     const showA = m.prob_away >= 15 ? `${m.prob_away}%` : '';
-    container.innerHTML += `
-      <div class="match-card">
-        <div class="match-header">
-          <span class="match-team-name">${m.home_team}</span>
-          <div class="match-center">
-            <span class="match-vs-label">vs</span>
-            <span class="match-prediction-tag" style="background:${s.bg};color:${s.color};">▶ ${s.label(m)}</span>
+
+    if (m.finished) {
+      // Determine actual outcome label
+      const hs = m.home_score ?? 0, as_ = m.away_score ?? 0;
+      const actual = hs > as_ ? 'H' : as_ > hs ? 'A' : 'D';
+      const correct = actual === m.predicted_result;
+      const resultStyle = correct
+        ? 'background:rgba(0,212,170,0.15);color:#00d4aa;'
+        : 'background:rgba(224,92,92,0.12);color:#f87171;';
+      const resultText = correct ? '✓ Correct' : '✗ Wrong';
+      const predNote = `Predicted: ${s.label(m)}`;
+      container.innerHTML += `
+        <div class="match-card finished">
+          <div class="match-teams">
+            <span class="match-team-name">${m.home_team}</span>
+            <div class="match-center">
+              <span class="match-score">${m.home_score ?? '?'} – ${m.away_score ?? '?'}</span>
+              <span class="match-vs-label">FT</span>
+            </div>
+            <span class="match-team-name away">${m.away_team}</span>
           </div>
-          <span class="match-team-name away">${m.away_team}</span>
-        </div>
-        <div class="prob-bar-stack">
-          <div class="prob-seg" style="flex:${m.prob_home};background:var(--accent-cl);">${showH}</div>
-          <div class="prob-seg" style="flex:${m.prob_draw};background:#374151;">${showD}</div>
-          <div class="prob-seg" style="flex:${m.prob_away};background:var(--accent-rel);">${showA}</div>
-        </div>
-        <div class="prob-bar-labels">
-          <span class="prob-bar-label">Home ${m.prob_home}%</span>
-          <span class="prob-bar-label">Draw ${m.prob_draw}%</span>
-          <span class="prob-bar-label">Away ${m.prob_away}%</span>
-        </div>
-      </div>`;
+          <div class="match-result-row">
+            <span class="match-result-tag" style="${resultStyle}">${resultText}</span>
+            <span class="match-pred-note">${predNote}</span>
+          </div>
+        </div>`;
+    } else {
+      container.innerHTML += `
+        <div class="match-card">
+          <div class="match-teams">
+            <span class="match-team-name">${m.home_team}</span>
+            <div class="match-center">
+              <span class="match-vs-label">vs</span>
+              <span class="match-prediction-tag" style="background:${s.bg};color:${s.color};">▶ ${s.label(m)}</span>
+            </div>
+            <span class="match-team-name away">${m.away_team}</span>
+          </div>
+          <div class="prob-bar-stack">
+            <div class="prob-seg" style="flex:${m.prob_home};background:var(--accent-cl);">${showH}</div>
+            <div class="prob-seg" style="flex:${m.prob_draw};background:#374151;">${showD}</div>
+            <div class="prob-seg" style="flex:${m.prob_away};background:var(--accent-rel);">${showA}</div>
+          </div>
+          <div class="prob-bar-labels">
+            <span class="prob-bar-label">Home ${m.prob_home}%</span>
+            <span class="prob-bar-label">Draw ${m.prob_draw}%</span>
+            <span class="prob-bar-label">Away ${m.prob_away}%</span>
+          </div>
+        </div>`;
+    }
   });
 
   // Accuracy chart
