@@ -62,7 +62,7 @@
       gap: 8px;
     }
 
-    .top-bar-brand span { color: var(--accent-cl); }
+    .top-bar-brand .brand-accent { color: var(--accent-cl); }
 
     .top-bar-actions {
       display: flex;
@@ -522,8 +522,8 @@
 <!-- ── Top nav bar ──────────────────────────────────── -->
 <div class="top-bar">
   <div class="top-bar-brand">
-    <img src="../assets/pixelart_ball.png" alt="" style="width:16px;height:16px;image-rendering:pixelated;">
-    <span>Predict<span style="color:var(--accent-cl)">May</span></span>
+    <img src="../assets/pixelart_ball.png" alt="" style="width:20px;height:20px;image-rendering:pixelated;">
+    <span>Predict<span class="brand-accent">May</span></span>
   </div>
   <div class="top-bar-actions">
     <button class="about-toggle" onclick="toggleAbout()">About this project ↓</button>
@@ -673,43 +673,42 @@ function toggleAbout() {
 const MOCK = {
   "meta": {"updated_at":"2026-04-10","matchday_current":28,"matchday_total":34,"matches_remaining_total":56},
   "accuracy": {
-    "overall_pct":46.8,"rolling_4week_pct":26.4,"best_week_pct":83.3,
+    "overall_pct":46.8,"rolling_4week_pct":47.2,"best_week_pct":83.3,
     "weekly":[
-      {"week_label":"Aug W2","weekly_pct":66.7,"rolling_pct":33.4},
-      {"week_label":"Aug W3","weekly_pct":66.7,"rolling_pct":44.5},
-      {"week_label":"Aug W4","weekly_pct":40.0,"rolling_pct":43.4},
-      {"week_label":"Sep W2","weekly_pct":12.5,"rolling_pct":46.5},
-      {"week_label":"Sep W3","weekly_pct":41.7,"rolling_pct":40.2},
-      {"week_label":"Sep W4","weekly_pct":50.0,"rolling_pct":36.0},
-      {"week_label":"Sep W5","weekly_pct":50.0,"rolling_pct":38.6},
-      {"week_label":"Oct W2","weekly_pct":50.0,"rolling_pct":47.9},
-      {"week_label":"Oct W3","weekly_pct":40.0,"rolling_pct":47.5},
-      {"week_label":"Oct W4","weekly_pct":50.0,"rolling_pct":47.5},
-      {"week_label":"Nov W1","weekly_pct":41.7,"rolling_pct":45.4},
-      {"week_label":"Nov W3","weekly_pct":71.4,"rolling_pct":50.8},
-      {"week_label":"Nov W4","weekly_pct":66.7,"rolling_pct":57.4},
-      {"week_label":"Dec W1","weekly_pct":22.2,"rolling_pct":50.5},
-      {"week_label":"Dec W2","weekly_pct":30.0,"rolling_pct":47.6},
-      {"week_label":"Dec W3","weekly_pct":75.0,"rolling_pct":48.5},
-      {"week_label":"Jan W2","weekly_pct":50.0,"rolling_pct":38.8},
-      {"week_label":"Jan W3","weekly_pct":81.8,"rolling_pct":51.7},
-      {"week_label":"Jan W4","weekly_pct":44.4,"rolling_pct":44.0},
-      {"week_label":"Feb W1","weekly_pct":57.1,"rolling_pct":58.3},
-      {"week_label":"Feb W2","weekly_pct":36.4,"rolling_pct":54.9},
-      {"week_label":"Feb W3","weekly_pct":33.3,"rolling_pct":42.8},
-      {"week_label":"Feb W4","weekly_pct":60.0,"rolling_pct":46.7},
-      {"week_label":"Mar W1","weekly_pct":83.3,"rolling_pct":53.2},
-      {"week_label":"Mar W2","weekly_pct":50.0,"rolling_pct":56.6},
-      {"week_label":"Mar W3","weekly_pct":42.9,"rolling_pct":59.0},
-      {"week_label":"Mar W4","weekly_pct":12.5,"rolling_pct":47.2},
-      {"week_label":"Apr W1","weekly_pct":0.0,"rolling_pct":26.4}
+      {"week_label":"GD 1","weekly_pct":66.7,"rolling_pct":33.4},
+      {"week_label":"GD 2","weekly_pct":66.7,"rolling_pct":44.5},
+      {"week_label":"GD 3","weekly_pct":40.0,"rolling_pct":43.4},
+      {"week_label":"GD 4","weekly_pct":12.5,"rolling_pct":46.5},
+      {"week_label":"GD 5","weekly_pct":41.7,"rolling_pct":40.2},
+      {"week_label":"GD 6","weekly_pct":50.0,"rolling_pct":36.0},
+      {"week_label":"GD 7","weekly_pct":50.0,"rolling_pct":38.6},
+      {"week_label":"GD 8","weekly_pct":50.0,"rolling_pct":47.9},
+      {"week_label":"GD 9","weekly_pct":40.0,"rolling_pct":47.5},
+      {"week_label":"GD 10","weekly_pct":50.0,"rolling_pct":47.5},
+      {"week_label":"GD 11","weekly_pct":41.7,"rolling_pct":45.4},
+      {"week_label":"GD 12","weekly_pct":71.4,"rolling_pct":50.8},
+      {"week_label":"GD 13","weekly_pct":66.7,"rolling_pct":57.4},
+      {"week_label":"GD 14","weekly_pct":22.2,"rolling_pct":50.5},
+      {"week_label":"GD 15","weekly_pct":30.0,"rolling_pct":47.6},
+      {"week_label":"GD 16","weekly_pct":75.0,"rolling_pct":48.5},
+      {"week_label":"GD 17","weekly_pct":50.0,"rolling_pct":38.8},
+      {"week_label":"GD 18","weekly_pct":81.8,"rolling_pct":51.7},
+      {"week_label":"GD 19","weekly_pct":44.4,"rolling_pct":44.0},
+      {"week_label":"GD 20","weekly_pct":57.1,"rolling_pct":58.3},
+      {"week_label":"GD 21","weekly_pct":36.4,"rolling_pct":54.9},
+      {"week_label":"GD 22","weekly_pct":33.3,"rolling_pct":42.8},
+      {"week_label":"GD 23","weekly_pct":60.0,"rolling_pct":46.7},
+      {"week_label":"GD 24","weekly_pct":83.3,"rolling_pct":53.2},
+      {"week_label":"GD 25","weekly_pct":50.0,"rolling_pct":56.6},
+      {"week_label":"GD 26","weekly_pct":42.9,"rolling_pct":59.0},
+      {"week_label":"GD 27","weekly_pct":12.5,"rolling_pct":47.2}
     ]
   },
   "standings":[
-    {"rank":1,"team":"Galatasaray","current_pts":64,"expected_pts":78.0,"likely_position":1,"top4_pct":100.0,"relegation_pct":0.0},
-    {"rank":2,"team":"Trabzonspor","current_pts":63,"expected_pts":73.4,"likely_position":2,"top4_pct":100.0,"relegation_pct":0.0},
-    {"rank":3,"team":"Fenerbahçe","current_pts":63,"expected_pts":71.1,"likely_position":3,"top4_pct":100.0,"relegation_pct":0.0},
-    {"rank":4,"team":"Beşiktaş","current_pts":52,"expected_pts":62.4,"likely_position":4,"top4_pct":95.8,"relegation_pct":0.0},
+    {"rank":1,"team":"Galatasaray","current_pts":67,"expected_pts":78.0,"likely_position":1,"top4_pct":100.0,"relegation_pct":0.0},
+    {"rank":2,"team":"Fenerbahçe","current_pts":63,"expected_pts":71.1,"likely_position":2,"top4_pct":100.0,"relegation_pct":0.0},
+    {"rank":3,"team":"Trabzonspor","current_pts":63,"expected_pts":73.4,"likely_position":3,"top4_pct":100.0,"relegation_pct":0.0},
+    {"rank":4,"team":"Beşiktaş","current_pts":55,"expected_pts":62.4,"likely_position":4,"top4_pct":95.8,"relegation_pct":0.0},
     {"rank":5,"team":"Göztepe","current_pts":46,"expected_pts":53.8,"likely_position":5,"top4_pct":3.5,"relegation_pct":0.0},
     {"rank":6,"team":"Başakşehir","current_pts":44,"expected_pts":52.5,"likely_position":6,"top4_pct":0.7,"relegation_pct":0.0},
     {"rank":7,"team":"Samsunspor","current_pts":36,"expected_pts":43.6,"likely_position":7,"top4_pct":0.0,"relegation_pct":0.0},
