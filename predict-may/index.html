@@ -276,73 +276,143 @@
       font-size: 9px;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.6px;
+      letter-spacing: 0.7px;
       color: var(--text-dim);
       padding: 7px 10px;
       text-align: right;
       border-bottom: 1px solid var(--border);
       white-space: nowrap;
     }
-
-    .standings-table thead th:first-child { text-align: center; width: 26px; }
+    .standings-table thead th:first-child  { text-align: center; width: 42px; }
     .standings-table thead th:nth-child(2) { text-align: left; }
+    .standings-table thead th:nth-child(3) { text-align: left; padding-left: 0; }
 
     .standings-table tbody td {
-      padding: 8px 10px;
+      padding: 9px 10px;
       border-bottom: 1px solid var(--border-soft);
       text-align: right;
       color: var(--text-muted);
       line-height: 1.2;
+      vertical-align: middle;
     }
+    .standings-table tbody td:nth-child(2) { text-align: left; }
+    .standings-table tbody td:nth-child(3) { text-align: left; padding-left: 0; }
 
-    .standings-table tbody td:first-child {
-      text-align: center;
-      font-size: 11px;
-      color: var(--text-dim);
-      font-weight: 700;
-    }
+    .standings-table tbody tr:hover td { background: rgba(255,255,255,0.025); }
+    .standings-table tbody tr.fb-row td  { background: rgba(212,160,23,0.06); }
+    .standings-table tbody tr.fb-row:hover td { background: rgba(212,160,23,0.11); }
 
-    .standings-table tbody td:nth-child(2) {
+    /* Zone divider rows */
+    .standings-table tbody tr.zone-header td {
+      padding: 5px 10px 4px;
+      font-size: 8.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: none;
+      border-top: 1px solid var(--border);
+      background: var(--bg-surface);
       text-align: left;
+    }
+    .standings-table tbody tr.zone-header:first-child td { border-top: none; }
+
+    /* Projected position cell */
+    .proj-pos {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+    }
+    .proj-pos-num {
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1;
+    }
+    .proj-pos-label {
+      font-size: 7px;
       font-weight: 700;
-      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-dim);
     }
 
-    .standings-table tbody tr:hover td { background: rgba(59,139,235,0.05); }
-    .standings-table tbody tr.fb-row td { background: rgba(212,160,23,0.07); }
-    .standings-table tbody tr.fb-row:hover td { background: rgba(212,160,23,0.12); }
+    /* Movement arrow */
+    .movement {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+    .movement.up   { background: rgba(0,212,170,0.12); color: #00d4aa; }
+    .movement.down { background: rgba(224,92,92,0.12); color: #f87171; }
+    .movement.same { background: rgba(255,255,255,0.05); color: var(--text-dim); }
 
+    /* xPts hero cell */
+    .xpts-cell {
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: -0.3px;
+    }
+
+    .pts-remaining {
+      font-size: 10px;
+      color: var(--text-dim);
+    }
+
+    /* Team cell */
     .team-cell {
       display: flex;
       align-items: center;
+      gap: 8px;
     }
 
     .zone-stripe {
       width: 3px;
-      height: 18px;
+      height: 20px;
       border-radius: 1px;
-      margin-right: 9px;
       flex-shrink: 0;
+    }
+
+    .team-name-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+    .team-name-main {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+    .team-pts-now {
+      font-size: 10px;
+      color: var(--text-dim);
+      font-weight: 500;
     }
 
     /* ── Mini bars ───────────────────────────────────────── */
     .mini-bar-wrap {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
       justify-content: flex-end;
     }
 
     .mini-bar-pct {
       font-size: 11px;
       font-weight: 700;
-      min-width: 32px;
+      min-width: 36px;
       text-align: right;
     }
 
     .mini-bar {
-      width: 64px;
-      height: 4px;
+      width: 72px;
+      height: 5px;
       background: var(--border);
       border-radius: 2px;
       overflow: hidden;
@@ -657,24 +727,26 @@
     <table class="standings-table">
       <thead>
         <tr>
-          <th>#</th>
+          <th>Proj</th>
           <th>Team</th>
-          <th>Pts</th>
-          <th>xPts</th>
-          <th>~Pos</th>
-          <th>Top 4%</th>
-          <th>Rel%</th>
+          <th></th>
+          <th style="text-align:right;">xPts</th>
+          <th style="text-align:right;">Now</th>
+          <th style="text-align:right;">+Pts left</th>
+          <th style="text-align:right;">Outcome %</th>
         </tr>
       </thead>
       <tbody id="standings-body"></tbody>
     </table>
 
-    <p style="font-size:10px;color:var(--text-dim);margin-top:14px;line-height:1.5;">
-      ★ Fenerbahçe row highlighted &nbsp;·&nbsp;
-      <strong style="color:var(--text-muted);">Pts</strong> current &nbsp;·&nbsp;
-      <strong style="color:var(--text-muted);">xPts</strong> projected final &nbsp;·&nbsp;
-      <strong style="color:var(--text-muted);">~Pos</strong> most likely finish
-    </p>
+    <div style="margin-top:16px;display:flex;flex-wrap:wrap;gap:20px;font-size:10px;color:var(--text-dim);line-height:1.7;">
+      <span><strong style="color:var(--text-muted);">Proj</strong> — projected final position (most likely finish across 10,000 simulations)</span>
+      <span><strong style="color:var(--text-muted);">xPts</strong> — expected points at season end</span>
+      <span><strong style="color:var(--text-muted);">Now</strong> — current points</span>
+      <span><strong style="color:var(--text-muted);">+Pts left</strong> — points still expected to be earned</span>
+      <span><span style="color:#00d4aa;font-weight:700;">▲</span> / <span style="color:#f87171;font-weight:700;">▼</span> — projected vs. current rank</span>
+      <span>★ Fenerbahçe highlighted</span>
+    </div>
   </div>
 
   <!-- Footer -->
@@ -769,11 +841,18 @@ fetch('./data/dashboard.json')
   .catch(() => render(MOCK));
 
 /* ── Color helpers ─────────────────────────────────── */
-function zoneColor(rank) {
-  if (rank <= 4)  return 'var(--accent-cl)';
-  if (rank === 5) return 'var(--accent-el)';
-  if (rank >= 16) return 'var(--accent-rel)';
-  return 'var(--border)';
+function zoneColor(projPos) {
+  if (projPos <= 4)  return 'var(--accent-cl)';
+  if (projPos === 5) return 'var(--accent-el)';
+  if (projPos >= 16) return 'var(--accent-rel)';
+  return 'transparent';
+}
+
+function projPosColor(projPos) {
+  if (projPos <= 4)  return 'var(--accent-cl)';
+  if (projPos === 5) return 'var(--accent-el)';
+  if (projPos >= 16) return 'var(--accent-rel)';
+  return 'var(--text-muted)';
 }
 
 function top4Color(v) {
@@ -803,7 +882,7 @@ function render(data) {
   const lastRolling = weeklyArr.length > 0
     ? weeklyArr[weeklyArr.length - 1].rolling_pct
     : acc.rolling_4week_pct;
-  const top = (data.standings || [])[0] || {};
+  const top = [...(data.standings || [])].sort((a,b) => a.likely_position - b.likely_position)[0] || {};
   document.getElementById('stats-strip').innerHTML = `
     <div class="stat-card">
       <div class="stat-accent" style="background:var(--accent-green);"></div>
@@ -830,20 +909,74 @@ function render(data) {
       <div class="stat-sub">${meta.matchday_total - meta.matchday_current} matchdays left</div>
     </div>`;
 
-  // Standings
+  // Standings — sorted by projected final position
   const tbody = document.getElementById('standings-body');
   tbody.innerHTML = '';
-  (data.standings || []).forEach(t => {
-    const isFb = t.team.toLowerCase().includes('fenerbah');
+  const sorted = [...(data.standings || [])].sort((a, b) => a.likely_position - b.likely_position);
+
+  const ZONES = [
+    { from: 1,  to: 4,  label: 'Champions League zone',  color: 'var(--accent-cl)'  },
+    { from: 5,  to: 5,  label: 'Europa League zone',      color: 'var(--accent-el)'  },
+    { from: 6,  to: 15, label: 'Mid table',               color: 'var(--text-dim)'   },
+    { from: 16, to: 18, label: 'Relegation zone',         color: 'var(--accent-rel)' },
+  ];
+
+  let zoneIdx = 0;
+  sorted.forEach((t, i) => {
+    const proj = t.likely_position;
+
+    // Insert zone header when we enter a new zone
+    while (zoneIdx < ZONES.length && proj >= ZONES[zoneIdx].from) {
+      const z = ZONES[zoneIdx];
+      tbody.innerHTML += `<tr class="zone-header"><td colspan="7" style="color:${z.color};">${z.label.toUpperCase()}</td></tr>`;
+      zoneIdx++;
+    }
+
+    const isFb  = t.team.toLowerCase().includes('fenerbah');
+    const delta = t.rank - proj;  // positive = rising, negative = falling
+    const movHtml = delta > 0
+      ? `<span class="movement up">▲ ${delta}</span>`
+      : delta < 0
+        ? `<span class="movement down">▼ ${Math.abs(delta)}</span>`
+        : `<span class="movement same">—</span>`;
+
+    const ptsLeft = (t.expected_pts - t.current_pts).toFixed(1);
+    const posColor = projPosColor(proj);
+
+    // Outcome % — show top4 for top half, rel for bottom, whichever is nonzero
+    let outcomeHtml = '';
+    if (t.top4_pct > 0) {
+      const c = top4Color(t.top4_pct);
+      outcomeHtml = `<div class="mini-bar-wrap"><span class="mini-bar-pct" style="color:${c};">${t.top4_pct}%</span><div class="mini-bar"><div class="mini-bar-fill" style="width:${Math.min(t.top4_pct,100)}%;background:${c};"></div></div></div><div style="font-size:8px;color:var(--text-dim);margin-top:1px;text-align:right;">Top 4</div>`;
+    } else if (t.relegation_pct > 0) {
+      const c = relColor(t.relegation_pct);
+      outcomeHtml = `<div class="mini-bar-wrap"><span class="mini-bar-pct" style="color:${c};">${t.relegation_pct}%</span><div class="mini-bar"><div class="mini-bar-fill" style="width:${Math.min(t.relegation_pct,100)}%;background:${c};"></div></div></div><div style="font-size:8px;color:var(--text-dim);margin-top:1px;text-align:right;">Rel</div>`;
+    } else {
+      outcomeHtml = `<span style="color:var(--text-dim);font-size:11px;">—</span>`;
+    }
+
     tbody.innerHTML += `
       <tr${isFb ? ' class="fb-row"' : ''}>
-        <td>${t.rank}</td>
-        <td><div class="team-cell"><span class="zone-stripe" style="background:${zoneColor(t.rank)};"></span>${t.team}${isFb ? ' <span style="color:var(--accent-gold);font-size:9px;">★</span>' : ''}</div></td>
-        <td style="font-weight:800;color:var(--text);">${t.current_pts}</td>
-        <td>${t.expected_pts.toFixed(1)}</td>
-        <td style="font-weight:600;">${t.likely_position}</td>
-        <td><div class="mini-bar-wrap"><span class="mini-bar-pct" style="color:${top4Color(t.top4_pct)};">${t.top4_pct}%</span><div class="mini-bar"><div class="mini-bar-fill" style="width:${t.top4_pct}%;background:${top4Color(t.top4_pct)};"></div></div></div></td>
-        <td><div class="mini-bar-wrap"><span class="mini-bar-pct" style="color:${relColor(t.relegation_pct)};">${t.relegation_pct}%</span><div class="mini-bar"><div class="mini-bar-fill" style="width:${t.relegation_pct}%;background:${relColor(t.relegation_pct)};"></div></div></div></td>
+        <td>
+          <div class="proj-pos">
+            <span class="proj-pos-num" style="color:${posColor};">${proj}</span>
+            <span class="proj-pos-label">proj</span>
+          </div>
+        </td>
+        <td>
+          <div class="team-cell">
+            <span class="zone-stripe" style="background:${zoneColor(proj)};"></span>
+            <div class="team-name-wrap">
+              <span class="team-name-main">${t.team}${isFb ? ' <span style="color:var(--accent-gold);font-size:9px;">★</span>' : ''}</span>
+              <span class="team-pts-now">Currently ${t.rank}${t.rank===1?'st':t.rank===2?'nd':t.rank===3?'rd':'th'} · ${t.current_pts} pts</span>
+            </div>
+          </div>
+        </td>
+        <td>${movHtml}</td>
+        <td><span class="xpts-cell">${t.expected_pts.toFixed(1)}</span></td>
+        <td style="color:var(--text-muted);">${t.current_pts}</td>
+        <td class="pts-remaining">+${ptsLeft}</td>
+        <td>${outcomeHtml}</td>
       </tr>`;
   });
 
