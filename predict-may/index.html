@@ -210,28 +210,12 @@
       width: 3px;
     }
 
-    /* ── Main grid ───────────────────────────────────────── */
-    .main-grid {
-      display: grid;
-      grid-template-columns: 1fr 360px;
-      align-items: start;
+    /* ── Content sections ────────────────────────────────── */
+    .content-section {
+      padding: 24px 28px 28px;
+      border-bottom: 1px solid var(--border);
     }
-
-    /* ── Left panel ──────────────────────────────────────── */
-    .left-panel {
-      background: var(--bg-card);
-      border-right: 1px solid var(--border);
-      padding: 22px 26px 28px;
-    }
-
-    /* ── Right panel ─────────────────────────────────────── */
-    .right-panel {
-      background: var(--bg-card2);
-      padding: 18px 18px 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
+    .content-section:last-child { border-bottom: none; }
 
     /* ── Section headers ─────────────────────────────────── */
     .section-head {
@@ -285,16 +269,16 @@
     .standings-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 12.5px;
+      font-size: 13px;
     }
 
     .standings-table thead th {
-      font-size: 8.5px;
+      font-size: 9px;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.6px;
       color: var(--text-dim);
-      padding: 6px 8px;
+      padding: 7px 10px;
       text-align: right;
       border-bottom: 1px solid var(--border);
       white-space: nowrap;
@@ -304,7 +288,7 @@
     .standings-table thead th:nth-child(2) { text-align: left; }
 
     .standings-table tbody td {
-      padding: 7px 8px;
+      padding: 8px 10px;
       border-bottom: 1px solid var(--border-soft);
       text-align: right;
       color: var(--text-muted);
@@ -357,7 +341,7 @@
     }
 
     .mini-bar {
-      width: 44px;
+      width: 64px;
       height: 4px;
       background: var(--border);
       border-radius: 2px;
@@ -373,8 +357,8 @@
     /* ── Match cards grid ───────────────────────────────────── */
     .match-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
     }
 
     .match-card {
@@ -508,10 +492,7 @@
 
     /* ── Chart panel ─────────────────────────────────────── */
     .chart-panel {
-      background: var(--bg-card);
-      border: 1px solid var(--border-soft);
-      padding: 14px 14px 10px;
-      border-radius: 2px;
+      background: transparent;
     }
 
     .chart-legend {
@@ -562,10 +543,10 @@
 
     @media (max-width: 700px) {
       body { padding: 0; }
-      .main-grid { grid-template-columns: 1fr; }
       .stats-strip { grid-template-columns: repeat(2, 1fr); }
-      .right-panel { border-top: 1px solid var(--border); }
+      .match-grid { grid-template-columns: 1fr 1fr; }
       .about-inner { grid-template-columns: 1fr; }
+      .content-section { padding: 16px 16px 20px; }
     }
   </style>
 </head>
@@ -627,80 +608,73 @@
     <div class="stat-card"><div class="stat-accent" style="background:var(--accent-el);"></div><div class="stat-label">Matches Remaining</div><div class="stat-value">—</div></div>
   </div>
 
-  <!-- Main grid -->
-  <div class="main-grid">
+  <!-- Matchday Predictions -->
+  <div class="content-section">
+    <div class="section-head">
+      <span class="section-title" id="matchday-title">Next Matchday</span>
+      <span class="section-note" id="matchday-dates"></span>
+    </div>
+    <div class="match-grid" id="match-cards"></div>
+  </div>
 
-    <!-- LEFT: Standings -->
-    <div class="left-panel">
-      <div class="section-head">
-        <span class="section-title">Projected Final Standings</span>
-        <span class="section-note">10,000 Monte Carlo simulations</span>
+  <!-- Accuracy chart -->
+  <div class="content-section">
+    <div class="chart-panel">
+      <div class="section-head" style="margin-bottom:14px;">
+        <span class="section-title">Prediction Accuracy</span>
+        <span class="section-note">2025–26 season</span>
       </div>
-
-      <div class="zone-legend">
-        <div class="legend-item"><div class="legend-pip" style="background:var(--accent-cl);"></div> Champions League</div>
-        <div class="legend-item"><div class="legend-pip" style="background:var(--accent-el);"></div> Europa League</div>
-        <div class="legend-item"><div class="legend-pip" style="background:var(--accent-rel);"></div> Relegation</div>
+      <canvas id="accuracyChart" height="110"></canvas>
+      <div class="chart-legend">
+        <div class="chart-legend-item">
+          <div class="chart-legend-line" style="background:rgba(255,255,255,0.2);"></div>
+          Per gameday %
+        </div>
+        <div class="chart-legend-item">
+          <div class="chart-legend-line" style="background:#00d4aa;"></div>
+          4-GD rolling avg
+        </div>
+        <div class="chart-legend-item" style="margin-left:auto;">
+          <span style="font-size:9px;color:var(--text-dim);font-style:italic;">Dashed = 33% baseline</span>
+        </div>
       </div>
+    </div>
+  </div>
 
-      <table class="standings-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Team</th>
-            <th>Pts</th>
-            <th>xPts</th>
-            <th>~Pos</th>
-            <th>Top 4%</th>
-            <th>Rel%</th>
-          </tr>
-        </thead>
-        <tbody id="standings-body"></tbody>
-      </table>
-
-      <p style="font-size:10px;color:var(--text-dim);margin-top:14px;line-height:1.5;">
-        ★ Fenerbahçe row highlighted &nbsp;·&nbsp;
-        <strong style="color:var(--text-muted);">Pts</strong> current &nbsp;·&nbsp;
-        <strong style="color:var(--text-muted);">xPts</strong> projected final &nbsp;·&nbsp;
-        <strong style="color:var(--text-muted);">~Pos</strong> most likely finish
-      </p>
+  <!-- Projected Standings -->
+  <div class="content-section">
+    <div class="section-head">
+      <span class="section-title">Projected Final Standings</span>
+      <span class="section-note">10,000 Monte Carlo simulations</span>
     </div>
 
-    <!-- RIGHT: Predictions + Chart -->
-    <div class="right-panel">
-
-      <!-- Next matchday -->
-      <div>
-        <div class="section-head">
-          <span class="section-title" id="matchday-title">Next Matchday</span>
-          <span class="section-note" id="matchday-dates"></span>
-        </div>
-        <div class="match-grid" id="match-cards"></div>
-      </div>
-
-      <!-- Accuracy chart -->
-      <div class="chart-panel">
-        <div class="section-head" style="margin-bottom:10px;">
-          <span class="section-title">Prediction Accuracy</span>
-          <span class="section-note">2025–26 season</span>
-        </div>
-        <canvas id="accuracyChart" height="155"></canvas>
-        <div class="chart-legend">
-          <div class="chart-legend-item">
-            <div class="chart-legend-line" style="background:rgba(255,255,255,0.2);"></div>
-            Weekly %
-          </div>
-          <div class="chart-legend-item">
-            <div class="chart-legend-line" style="background:#00d4aa;"></div>
-            4-week rolling
-          </div>
-          <div class="chart-legend-item" style="margin-left:auto;">
-            <span style="font-size:9px;color:var(--text-dim);font-style:italic;">Dashed = 33% baseline</span>
-          </div>
-        </div>
-      </div>
-
+    <div class="zone-legend">
+      <div class="legend-item"><div class="legend-pip" style="background:var(--accent-cl);"></div> Champions League</div>
+      <div class="legend-item"><div class="legend-pip" style="background:var(--accent-el);"></div> Europa League</div>
+      <div class="legend-item"><div class="legend-pip" style="background:var(--accent-rel);"></div> Relegation</div>
     </div>
+
+    <table class="standings-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Team</th>
+          <th>Pts</th>
+          <th>xPts</th>
+          <th>~Pos</th>
+          <th>Top 4%</th>
+          <th>Rel%</th>
+        </tr>
+      </thead>
+      <tbody id="standings-body"></tbody>
+    </table>
+
+    <p style="font-size:10px;color:var(--text-dim);margin-top:14px;line-height:1.5;">
+      ★ Fenerbahçe row highlighted &nbsp;·&nbsp;
+      <strong style="color:var(--text-muted);">Pts</strong> current &nbsp;·&nbsp;
+      <strong style="color:var(--text-muted);">xPts</strong> projected final &nbsp;·&nbsp;
+      <strong style="color:var(--text-muted);">~Pos</strong> most likely finish
+    </p>
   </div>
 
   <!-- Footer -->
