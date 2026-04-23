@@ -1,597 +1,245 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Onur Irkin</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%23008080'/><text x='2' y='13' font-size='13' fill='white'>O</text></svg>">
-<script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
-<style>
-  @font-face {
-    font-family: 'W95FA';
-    src: url('https://cdn.jsdelivr.net/gh/nickvdyck/windows-95-font@master/fonts/w95fa.woff2') format('woff2');
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  :root {
-    --win-bg: #c0c0c0; --win-dark: #808080; --win-darker: #404040;
-    --win-light: #dfdfdf; --win-lighter: #ffffff; --win-title: #000080;
-    --win-title-inactive: #808080; --win-title-text: #ffffff;
-    --win-desktop: #008080; --win-highlight: #000080;
-    --win-text: #000000; --win-link: #0000ff;
-  }
-  html, body {
-    width: 100%; height: 100%; overflow: hidden;
-    font-family: 'W95FA', 'MS Sans Serif', Tahoma, sans-serif;
-    font-size: 11px; color: var(--win-text);
-    user-select: none; -webkit-user-select: none;
-  }
-  #desktop {
-    width: 100%; height: calc(100% - 28px); background: var(--win-desktop);
-    position: relative; overflow: hidden; display: flex; flex-direction: column;
-    flex-wrap: wrap; align-content: flex-start; padding: 12px; gap: 8px;
-  }
-  .desktop-icon {
-    display: flex; flex-direction: column; align-items: center; width: 70px;
-    padding: 4px 2px; cursor: pointer; text-align: center; border: 1px solid transparent;
-  }
-  .desktop-icon:hover { background: rgba(255,255,255,0.08); }
-  .desktop-icon:active, .desktop-icon.selected { border: 1px dotted #fff; }
-  .desktop-icon .icon-img { width: 32px; height: 32px; margin-bottom: 4px; image-rendering: pixelated; }
-  .desktop-icon .icon-label { color: #fff; text-shadow: 1px 1px 0 #000; font-size: 11px; line-height: 1.3; word-break: break-word; }
-  .window {
-    position: absolute; background: var(--win-bg); min-width: 200px; min-height: 120px;
-    display: flex; flex-direction: column;
-    box-shadow: inset 1px 1px 0 var(--win-lighter), inset -1px -1px 0 var(--win-dark), 2px 2px 0 rgba(0,0,0,0.3);
-    border: 2px solid var(--win-bg); border-top-color: var(--win-lighter);
-    border-left-color: var(--win-lighter); border-bottom-color: var(--win-darker);
-    border-right-color: var(--win-darker);
-  }
-  .window.hidden { display: none; }
-  .window.maximized { top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; }
-  .title-bar {
-    background: linear-gradient(90deg, var(--win-title), #1084d0);
-    color: var(--win-title-text); display: flex; align-items: center;
-    padding: 2px 3px; font-weight: bold; font-size: 11px; cursor: default;
-    flex-shrink: 0; height: 20px;
-  }
-  .window.inactive .title-bar { background: linear-gradient(90deg, var(--win-title-inactive), #b5b5b5); }
-  .title-bar-icon { width: 14px; height: 14px; margin-right: 4px; image-rendering: pixelated; }
-  .title-bar-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .title-bar-controls { display: flex; gap: 2px; }
-  .title-bar-controls button {
-    width: 16px; height: 14px; background: var(--win-bg);
-    border-top: 1px solid var(--win-lighter); border-left: 1px solid var(--win-lighter);
-    border-bottom: 1px solid var(--win-darker); border-right: 1px solid var(--win-darker);
-    font-size: 9px; font-family: inherit; display: flex; align-items: center;
-    justify-content: center; cursor: pointer; padding: 0; line-height: 1;
-  }
-  .title-bar-controls button:active {
-    border-top-color: var(--win-darker); border-left-color: var(--win-darker);
-    border-bottom-color: var(--win-lighter); border-right-color: var(--win-lighter);
-    padding-top: 1px; padding-left: 1px;
-  }
-  .window-body {
-    flex: 1; margin: 4px; padding: 8px; overflow: auto; background: #fff;
-    border-top: 2px solid var(--win-darker); border-left: 2px solid var(--win-darker);
-    border-bottom: 2px solid var(--win-lighter); border-right: 2px solid var(--win-lighter);
-    font-size: 12px; line-height: 1.6; user-select: text; -webkit-user-select: text; color: var(--win-text);
-  }
-  .window-body h2 { font-size: 14px; margin: 12px 0 6px; border-bottom: 1px solid var(--win-dark); padding-bottom: 2px; }
-  .window-body h2:first-child { margin-top: 0; }
-  .window-body p { margin: 4px 0; }
-  .window-body ul { margin: 4px 0 4px 20px; }
-  .window-body li { margin: 2px 0; }
-  .window-body a { color: var(--win-link); }
-  .window-body a:visited { color: #800080; }
-  .window-body .section { margin-bottom: 12px; }
-  .window-body .job-date { color: var(--win-dark); font-size: 11px; }
-  .window-body .divider { border: none; border-top: 1px solid var(--win-dark); margin: 8px 0; }
-  .status-bar { display: flex; flex-shrink: 0; padding: 2px 4px; gap: 2px; }
-  .status-bar-field {
-    flex: 1; padding: 1px 4px;
-    border-top: 1px solid var(--win-darker); border-left: 1px solid var(--win-darker);
-    border-bottom: 1px solid var(--win-lighter); border-right: 1px solid var(--win-lighter);
-    font-size: 11px;
-  }
-  .resize-handle {
-    position: absolute; bottom: 0; right: 0; width: 14px; height: 14px; cursor: nwse-resize;
-    background: linear-gradient(135deg, transparent 30%, var(--win-dark) 30%, var(--win-dark) 40%, transparent 40%, transparent 50%, var(--win-dark) 50%, var(--win-dark) 60%, transparent 60%, transparent 70%, var(--win-dark) 70%, var(--win-dark) 80%, transparent 80%);
-  }
-  #taskbar {
-    height: 28px; background: var(--win-bg); border-top: 2px solid var(--win-lighter);
-    display: flex; align-items: center; padding: 2px; gap: 2px; position: relative; z-index: 99999;
-  }
-  #start-btn {
-    height: 22px; padding: 0 6px; display: flex; align-items: center; gap: 3px;
-    font-family: inherit; font-weight: bold; font-size: 11px; background: var(--win-bg);
-    border-top: 2px solid var(--win-lighter); border-left: 2px solid var(--win-lighter);
-    border-bottom: 2px solid var(--win-darker); border-right: 2px solid var(--win-darker); cursor: pointer;
-  }
-  #start-btn:active, #start-btn.active {
-    border-top-color: var(--win-darker); border-left-color: var(--win-darker);
-    border-bottom-color: var(--win-lighter); border-right-color: var(--win-lighter);
-    padding-top: 1px; padding-left: 7px;
-  }
-  #start-btn .win-logo { width: 16px; height: 16px; }
-  .taskbar-divider { width: 2px; height: 22px; border-left: 1px solid var(--win-darker); border-right: 1px solid var(--win-lighter); margin: 0 2px; }
-  #taskbar-windows { flex: 1; display: flex; gap: 2px; overflow: hidden; }
-  .taskbar-btn {
-    height: 22px; min-width: 120px; max-width: 160px; padding: 0 6px;
-    display: flex; align-items: center; gap: 4px; font-family: inherit; font-size: 11px;
-    background: var(--win-bg); border-top: 2px solid var(--win-lighter); border-left: 2px solid var(--win-lighter);
-    border-bottom: 2px solid var(--win-darker); border-right: 2px solid var(--win-darker);
-    cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left;
-  }
-  .taskbar-btn.active {
-    border-top-color: var(--win-darker); border-left-color: var(--win-darker);
-    border-bottom-color: var(--win-lighter); border-right-color: var(--win-lighter);
-    font-weight: bold; background: repeating-conic-gradient(var(--win-bg) 0% 25%, #fff 0% 50%) 0 0 / 2px 2px;
-  }
-  #clock {
-    height: 22px; padding: 0 8px; display: flex; align-items: center; font-size: 11px;
-    border-top: 1px solid var(--win-darker); border-left: 1px solid var(--win-darker);
-    border-bottom: 1px solid var(--win-lighter); border-right: 1px solid var(--win-lighter);
-    min-width: 60px; justify-content: center;
-  }
-  #start-menu {
-    position: absolute; bottom: 28px; left: 2px; width: 200px; background: var(--win-bg);
-    border-top: 2px solid var(--win-lighter); border-left: 2px solid var(--win-lighter);
-    border-bottom: 2px solid var(--win-darker); border-right: 2px solid var(--win-darker);
-    z-index: 100000; display: none; flex-direction: column;
-  }
-  #start-menu.visible { display: flex; }
-  .start-menu-sidebar {
-    position: absolute; left: 0; bottom: 0; width: 24px; height: 100%;
-    background: linear-gradient(to top, var(--win-title), #1084d0);
-    display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px;
-  }
-  .start-menu-sidebar span { writing-mode: vertical-rl; transform: rotate(180deg); color: var(--win-title-text); font-weight: bold; font-size: 16px; letter-spacing: 1px; }
-  .start-menu-items { margin-left: 24px; padding: 2px 0; }
-  .start-menu-item { display: flex; align-items: center; gap: 8px; padding: 6px 12px; cursor: pointer; font-size: 11px; }
-  .start-menu-item:hover { background: var(--win-highlight); color: #fff; }
-  .start-menu-item .smi-icon { width: 24px; height: 24px; flex-shrink: 0; }
-  .start-menu-sep { margin: 2px 24px 2px 28px; border: none; border-top: 1px solid var(--win-dark); border-bottom: 1px solid var(--win-lighter); }
-  .teletext-body {
-    background: #000 !important; color: #fff; font-family: 'Courier New', monospace;
-    font-size: 14px; line-height: 1.4; padding: 12px !important;
-  }
-  .teletext-body .tt-header { background: #00f; color: #ff0; padding: 4px 8px; text-align: center; font-weight: bold; margin-bottom: 8px; }
-  .teletext-body .tt-cyan { color: #0ff; } .teletext-body .tt-yellow { color: #ff0; }
-  .teletext-body .tt-green { color: #0f0; } .teletext-body .tt-magenta { color: #f0f; }
-  .teletext-body .tt-red { color: #f00; } .teletext-body .tt-white { color: #fff; }
-  .teletext-body a { color: #0ff; }
-  .resume-body { padding: 0 !important; display: flex; flex-direction: column; }
-  .resume-body .pdf-toolbar {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    padding: 6px 8px; background: var(--win-bg); border-bottom: 1px solid var(--win-dark); flex-shrink: 0;
-  }
-  .resume-body .pdf-toolbar span { font-size: 11px; }
-  .win-btn {
-    padding: 2px 12px; font-family: inherit; font-size: 11px; background: var(--win-bg);
-    border-top: 2px solid var(--win-lighter); border-left: 2px solid var(--win-lighter);
-    border-bottom: 2px solid var(--win-darker); border-right: 2px solid var(--win-darker);
-    cursor: pointer; text-decoration: none; color: var(--win-text);
-  }
-  .win-btn:active { border-top-color: var(--win-darker); border-left-color: var(--win-darker); border-bottom-color: var(--win-lighter); border-right-color: var(--win-lighter); }
-  .resume-body iframe { flex: 1; width: 100%; border: none; }
-  .blog-nav { display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; }
-  .blog-tab {
-    padding: 2px 10px; font-family: inherit; font-size: 11px; background: var(--win-bg);
-    border-top: 2px solid var(--win-lighter); border-left: 2px solid var(--win-lighter);
-    border-bottom: 2px solid var(--win-darker); border-right: 2px solid var(--win-darker); cursor: pointer;
-  }
-  .blog-tab:active, .blog-tab.active {
-    border-top-color: var(--win-darker); border-left-color: var(--win-darker);
-    border-bottom-color: var(--win-lighter); border-right-color: var(--win-lighter); font-weight: bold;
-  }
-  .blog-content { user-select: text; -webkit-user-select: text; }
-  .blog-content h1 { font-size: 14px; margin: 0 0 4px; border-bottom: 1px solid var(--win-dark); padding-bottom: 2px; }
-  .blog-content h2 { font-size: 13px; margin: 10px 0 4px; }
-  .blog-content p { margin: 4px 0; }
-  .blog-content ul, .blog-content ol { margin: 4px 0 4px 20px; }
-  .blog-content li { margin: 2px 0; }
-  .blog-content pre { background: #f0f0f0; border: 1px solid var(--win-dark); padding: 6px 8px; font-family: 'Courier New', monospace; font-size: 11px; overflow-x: auto; margin: 6px 0; white-space: pre-wrap; }
-  .blog-content code { font-family: 'Courier New', monospace; font-size: 11px; background: #f0f0f0; padding: 0 2px; }
-  .blog-content pre code { background: none; padding: 0; }
-  .blog-content em { font-style: italic; color: var(--win-dark); }
-  .blog-content a { color: var(--win-link); }
-  .blog-content hr { border: none; border-top: 1px solid var(--win-dark); margin: 8px 0; }
-  .window-body::-webkit-scrollbar { width: 16px; }
-  .window-body::-webkit-scrollbar-track { background: repeating-conic-gradient(var(--win-bg) 0% 25%, #fff 0% 50%) 0 0 / 2px 2px; }
-  .window-body::-webkit-scrollbar-thumb {
-    background: var(--win-bg); border-top: 2px solid var(--win-lighter); border-left: 2px solid var(--win-lighter);
-    border-bottom: 2px solid var(--win-darker); border-right: 2px solid var(--win-darker);
-  }
-  .window-body::-webkit-scrollbar-button {
-    background: var(--win-bg); border-top: 2px solid var(--win-lighter); border-left: 2px solid var(--win-lighter);
-    border-bottom: 2px solid var(--win-darker); border-right: 2px solid var(--win-darker); height: 16px;
-  }
-  #boot-screen {
-    position: fixed; inset: 0; background: #000; z-index: 999999;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    color: #c0c0c0; font-family: 'Courier New', monospace; font-size: 14px; transition: opacity 0.5s;
-  }
-  #boot-screen.fade-out { opacity: 0; pointer-events: none; }
-  #boot-screen .boot-logo { font-size: 18px; color: #fff; margin-bottom: 24px; text-align: center; line-height: 1.2; }
-  #boot-screen .boot-bar-container { width: 200px; height: 18px; background: var(--win-darker); border: 2px solid var(--win-dark); padding: 2px; }
-  #boot-screen .boot-bar { height: 100%; width: 0%; background: var(--win-title); transition: width 0.3s; }
-  #boot-screen .boot-text { margin-top: 12px; font-size: 12px; }
-  @media (max-width: 700px) {
-    .window { width: calc(100% - 8px) !important; left: 4px !important; max-height: calc(100% - 8px); }
-    .taskbar-btn { min-width: 40px; max-width: 80px; }
-    .taskbar-btn span { display: none; }
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onur Irkin</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --text:    #111111;
+      --muted:   #888888;
+      --faint:   #cccccc;
+      --bg:      #ffffff;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.7;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 72px 24px 100px;
+    }
+
+    /* ── Header ─────────────────────────────────── */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 40px;
+    }
+
+    .name {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.1px;
+    }
+
+    nav {
+      display: flex;
+      gap: 18px;
+    }
+
+    nav a {
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+    }
+    nav a:hover { color: var(--text); }
+
+    /* ── Bio ─────────────────────────────────────── */
+    .bio {
+      color: #333;
+      margin-bottom: 56px;
+    }
+
+    /* ── Sections ────────────────────────────────── */
+    section { margin-bottom: 48px; }
+
+    .label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--faint);
+      margin-bottom: 22px;
+    }
+
+    /* ── Work items ──────────────────────────────── */
+    .item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+    .item:last-child { margin-bottom: 0; }
+
+    .item-body { flex: 1; }
+
+    .item-name {
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .item-desc {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 2px;
+      line-height: 1.55;
+    }
+
+    .item-links {
+      font-size: 12px;
+      margin-top: 5px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .item-links a {
+      color: var(--muted);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      text-decoration-color: var(--faint);
+    }
+    .item-links a:hover { color: var(--text); text-decoration-color: var(--text); }
+
+    .item-year {
+      font-size: 12px;
+      color: var(--faint);
+      white-space: nowrap;
+      padding-top: 2px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Writing items ───────────────────────────── */
+    .post {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 20px;
+      margin-bottom: 12px;
+    }
+    .post:last-child { margin-bottom: 0; }
+
+    .post-title {
+      font-size: 15px;
+      color: var(--text);
+    }
+    .post-title a { color: inherit; text-decoration: underline; text-underline-offset: 2px; text-decoration-color: var(--faint); }
+    .post-title a:hover { text-decoration-color: var(--text); }
+
+    .post-date {
+      font-size: 12px;
+      color: var(--faint);
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Footer ──────────────────────────────────── */
+    footer {
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      gap: 16px;
+      padding-top: 48px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+
+    /* ── Responsive ──────────────────────────────── */
+    @media (max-width: 480px) {
+      body   { padding: 40px 20px 72px; }
+      header { flex-direction: column; gap: 14px; }
+      nav    { gap: 14px; }
+    }
+  </style>
 </head>
 <body>
 
-<div id="boot-screen">
-  <div class="boot-logo"><span style="color:#fff;font-weight:bold;">OnurOS 98</span><br><span style="font-size:12px;color:#808080;">Personal Edition</span></div>
-  <div class="boot-bar-container"><div class="boot-bar" id="boot-bar"></div></div>
-  <div class="boot-text" id="boot-text">Starting...</div>
-</div>
+<header>
+  <span class="name">Onur Irkin</span>
+  <nav>
+    <a href="https://github.com/onurhani" target="_blank">GitHub</a>
+    <a href="https://linkedin.com/in/onur-irkin" target="_blank">LinkedIn</a>
+    <a href="mailto:onurhan.irkin@gmail.com">Email</a>
+  </nav>
+</header>
 
-<div id="desktop">
-  <div class="desktop-icon" ondblclick="openWindow('about')" onclick="selectIcon(this)">
-    <svg class="icon-img" viewBox="0 0 32 32" fill="none"><rect x="2" y="4" width="28" height="24" rx="1" fill="#ffffe0" stroke="#808080"/><line x1="6" y1="10" x2="26" y2="10" stroke="#c0c0c0" stroke-width="0.5"/><line x1="6" y1="14" x2="26" y2="14" stroke="#c0c0c0" stroke-width="0.5"/><line x1="6" y1="18" x2="26" y2="18" stroke="#c0c0c0" stroke-width="0.5"/><line x1="6" y1="22" x2="26" y2="22" stroke="#c0c0c0" stroke-width="0.5"/><text x="6" y="13" fill="#333" font-size="4" font-family="sans-serif">about_me.txt</text></svg>
-    <span class="icon-label">about_me.txt</span>
-  </div>
-  <div class="desktop-icon" ondblclick="openWindow('resume')" onclick="selectIcon(this)">
-    <svg class="icon-img" viewBox="0 0 32 32" fill="none"><path d="M6 2H22L26 6V30H6Z" fill="#fff" stroke="#808080"/><path d="M22 2V6H26" fill="#c0c0c0" stroke="#808080"/><rect x="9" y="9" width="14" height="1.5" fill="#d00"/><rect x="9" y="12" width="12" height="1" fill="#808080"/><rect x="9" y="14.5" width="14" height="1" fill="#808080"/><rect x="9" y="17" width="10" height="1" fill="#808080"/><rect x="9" y="19.5" width="14" height="1" fill="#808080"/><rect x="9" y="22" width="11" height="1" fill="#808080"/><rect x="9" y="24.5" width="14" height="1" fill="#808080"/></svg>
-    <span class="icon-label">Resume.pdf</span>
-  </div>
-  <div class="desktop-icon" ondblclick="openWindow('projects')" onclick="selectIcon(this)">
-    <svg class="icon-img" viewBox="0 0 32 32" fill="none"><path d="M2 8 Q2 6 4 6 L13 6 L15 4 L28 4 Q30 4 30 6 L30 26 Q30 28 28 28 L4 28 Q2 28 2 26 Z" fill="#f0c040" stroke="#808080"/><path d="M2 10 L30 10 L30 26 Q30 28 28 28 L4 28 Q2 28 2 26 Z" fill="#f8d860" stroke="#808080"/></svg>
-    <span class="icon-label">Projects</span>
-  </div>
-  <div class="desktop-icon" ondblclick="openWindow('teletext')" onclick="selectIcon(this)" style="position:absolute;top:12px;right:12px;">
-    <svg class="icon-img" viewBox="0 0 32 32" fill="none"><rect x="2" y="4" width="28" height="22" rx="2" fill="#222" stroke="#808080"/><rect x="4" y="6" width="24" height="18" fill="#000"/><text x="6" y="14" fill="#0ff" font-size="5" font-family="monospace" font-weight="bold">TEXT</text><text x="6" y="20" fill="#ff0" font-size="4" font-family="monospace">ART</text><rect x="12" y="26" width="8" height="2" fill="#808080"/></svg>
-    <span class="icon-label">Teletext Art</span>
-  </div>
-  <div class="desktop-icon" ondblclick="openWindow('links')" onclick="selectIcon(this)">
-    <svg class="icon-img" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="12" fill="#4169e1" stroke="#808080"/><ellipse cx="16" cy="16" rx="6" ry="12" fill="none" stroke="#fff" stroke-width="0.8"/><line x1="4" y1="16" x2="28" y2="16" stroke="#fff" stroke-width="0.8"/><line x1="6" y1="10" x2="26" y2="10" stroke="#fff" stroke-width="0.5"/><line x1="6" y1="22" x2="26" y2="22" stroke="#fff" stroke-width="0.5"/></svg>
-    <span class="icon-label">Links</span>
-  </div>
-  <div class="desktop-icon" ondblclick="openWindow('blog')" onclick="selectIcon(this)">
-    <svg class="icon-img" viewBox="0 0 32 32" fill="none"><rect x="2" y="2" width="28" height="28" rx="1" fill="#fff" stroke="#808080"/><rect x="2" y="2" width="28" height="6" fill="#800000"/><text x="5" y="7" fill="#fff" font-size="4" font-weight="bold" font-family="sans-serif">BLOG</text><rect x="5" y="11" width="22" height="2" fill="#c0c0c0"/><rect x="5" y="15" width="18" height="1.5" fill="#e0e0e0"/><rect x="5" y="18.5" width="22" height="1.5" fill="#e0e0e0"/><rect x="5" y="22" width="15" height="1.5" fill="#e0e0e0"/></svg>
-    <span class="icon-label">Blog</span>
-  </div>
-  <div class="desktop-icon" ondblclick="openWindow('predictmay')" onclick="selectIcon(this)">
-    <img class="icon-img" src="assets/pixelart_ball.png" alt="Predict May">
-    <span class="icon-label">Predict May</span>
-  </div>
-</div>
+<p class="bio">
+  Analytics engineer in Berlin. Eight years across the data stack — pipelines,
+  modelling, semantic layers. Most curious right now about how AI will reshape
+  the way teams build with data.<br><br>
+  Outside of work: music, and a small person who showed up recently and changed
+  everything about how I spend my time and what I care about.
+</p>
 
-<!-- ABOUT ME — content loaded from about_me.txt -->
-<div class="window hidden" id="win-about" style="width:480px;height:400px;top:60px;left:140px;z-index:10;">
-  <div class="title-bar" onmousedown="startDrag(event,'win-about')">
-    <svg class="title-bar-icon" viewBox="0 0 16 16"><rect x="1" y="2" width="14" height="12" rx="1" fill="#ffffe0" stroke="#808080" stroke-width="0.5"/></svg>
-    <span class="title-bar-text">about_me.txt - Notepad</span>
-    <div class="title-bar-controls"><button onclick="minimizeWindow('about')">_</button><button onclick="maximizeWindow('about')">□</button><button onclick="closeWindow('about')">×</button></div>
-  </div>
-  <div class="window-body" id="about-content" style="font-family:'Courier New',monospace;font-size:12px;line-height:1.7;white-space:pre-wrap;">Loading...</div>
-  <div class="status-bar"><div class="status-bar-field">about_me.txt</div><div class="status-bar-field" style="flex:0 0 auto;">EN · DE · TR</div></div>
-  <div class="resize-handle" onmousedown="startResize(event,'win-about')"></div>
-</div>
+<section>
+  <p class="label">Work</p>
 
-<!-- RESUME — PDF served from .files/ -->
-<div class="window hidden" id="win-resume" style="width:600px;height:500px;top:30px;left:80px;z-index:10;">
-  <div class="title-bar" onmousedown="startDrag(event,'win-resume')">
-    <svg class="title-bar-icon" viewBox="0 0 16 16"><path d="M3 1H11L13 3V15H3Z" fill="#fff" stroke="#808080" stroke-width="0.5"/><rect x="5" y="5" width="6" height="1" fill="#d00"/></svg>
-    <span class="title-bar-text">Resume.pdf - Acrobat Reader</span>
-    <div class="title-bar-controls"><button onclick="minimizeWindow('resume')">_</button><button onclick="maximizeWindow('resume')">□</button><button onclick="closeWindow('resume')">×</button></div>
-  </div>
-  <div class="window-body resume-body">
-    <div class="pdf-toolbar">
-      <span>Resume.pdf</span>
-      <a class="win-btn" href=".files/Resume.pdf" download>Save</a>
-      <a class="win-btn" href=".files/Resume.pdf" target="_blank">Open in new tab</a>
+  <div class="item">
+    <div class="item-body">
+      <div class="item-name">Predict May</div>
+      <div class="item-desc">Football analytics for the Turkish Süper Lig. Monte Carlo
+        projections and match predictions updated each matchday.</div>
+      <div class="item-links">
+        <a href="https://onurhani.github.io/predict-may/" target="_blank">Dashboard</a>
+        <a href="https://github.com/onurhani/predict-may" target="_blank">GitHub</a>
+      </div>
     </div>
-    <iframe src=".files/Resume.pdf" title="Resume PDF"></iframe>
+    <span class="item-year">2025</span>
   </div>
-  <div class="status-bar"><div class="status-bar-field">Resume.pdf</div><div class="status-bar-field" style="flex:0 0 80px;">Page 1</div></div>
-  <div class="resize-handle" onmousedown="startResize(event,'win-resume')"></div>
-</div>
 
-<!-- PROJECTS — loaded from projects/*.md -->
-<div class="window hidden" id="win-projects" style="width:540px;height:460px;top:50px;left:120px;z-index:10;">
-  <div class="title-bar" onmousedown="startDrag(event,'win-projects')">
-    <svg class="title-bar-icon" viewBox="0 0 16 16"><path d="M1 4 Q1 3 2 3 L6 3 L7 2 L14 2 Q15 2 15 3 L15 13 Q15 14 14 14 L2 14 Q1 14 1 13 Z" fill="#f0c040" stroke="#808080" stroke-width="0.5"/><path d="M1 5 L15 5 L15 13 Q15 14 14 14 L2 14 Q1 14 1 13 Z" fill="#f8d860" stroke="#808080" stroke-width="0.5"/></svg>
-    <span class="title-bar-text">Projects</span>
-    <div class="title-bar-controls"><button onclick="minimizeWindow('projects')">_</button><button onclick="maximizeWindow('projects')">□</button><button onclick="closeWindow('projects')">×</button></div>
+  <div class="item">
+    <div class="item-body">
+      <div class="item-name">Dog API Pipeline</div>
+      <div class="item-desc">Production-style data ingestion using dlt, Apache Airflow,
+        and DuckDB. Schema inference, incremental loading, proper orchestration.</div>
+      <div class="item-links">
+        <a href="https://github.com/onurhani/dog-api-pipeline" target="_blank">GitHub</a>
+      </div>
+    </div>
+    <span class="item-year">2025</span>
   </div>
-  <div class="window-body">
-    <div class="blog-nav" id="projects-nav"></div>
-    <div id="projects-content" class="blog-content"></div>
+
+  <div class="item">
+    <div class="item-body">
+      <div class="item-name">Teletext Art</div>
+      <div class="item-desc">A browser-based teletext art studio. Mosaic characters,
+        colour blocks, classic terminal aesthetics.</div>
+      <div class="item-links">
+        <a href="teletext.html">Open</a>
+      </div>
+    </div>
+    <span class="item-year">2024</span>
   </div>
-  <div class="status-bar"><div class="status-bar-field" id="projects-status">2 projects</div></div>
-  <div class="resize-handle" onmousedown="startResize(event,'win-projects')"></div>
-</div>
+</section>
 
-<!-- PREDICT MAY — football analytics dashboard -->
-<div class="window hidden" id="win-predictmay" style="width:980px;height:620px;top:30px;left:60px;z-index:10;">
-  <div class="title-bar" onmousedown="startDrag(event,'win-predictmay')">
-    <img class="title-bar-icon" src="assets/pixelart_ball.png" alt="Predict May">
-    <span class="title-bar-text">Predict May — Süper Lig 2025–26 Dashboard</span>
-    <div class="title-bar-controls"><button onclick="minimizeWindow('predictmay')">_</button><button onclick="maximizeWindow('predictmay')">□</button><button onclick="closeWindow('predictmay')">×</button></div>
+<section>
+  <p class="label">Writing</p>
+
+  <div class="post">
+    <span class="post-title">How to develop a profitable app</span>
+    <span class="post-date">Jan 2020</span>
   </div>
-  <div class="window-body" style="padding:0;">
-    <iframe src="https://onurhani.github.io/predict-may/" style="width:100%;height:100%;border:none;" title="Predict May Dashboard" id="predictmay-iframe" data-src="https://onurhani.github.io/predict-may/"></iframe>
+
+  <div class="post">
+    <span class="post-title">Collatz sequence (or Hailstone sequence)</span>
+    <span class="post-date">Jun 2019</span>
   </div>
-  <div class="resize-handle" onmousedown="startResize(event,'win-predictmay')"></div>
-</div>
+</section>
 
-<!-- TELETEXT -->
-<div class="window hidden" id="win-teletext" style="width:700px;height:560px;top:40px;left:100px;z-index:10;">
-  <div class="title-bar" onmousedown="startDrag(event,'win-teletext')">
-    <svg class="title-bar-icon" viewBox="0 0 16 16"><rect x="1" y="2" width="14" height="11" rx="1" fill="#222" stroke="#808080" stroke-width="0.5"/><text x="4" y="10" fill="#0ff" font-size="6" font-family="monospace">T</text></svg>
-    <span class="title-bar-text">Teletext Art Generator</span>
-    <div class="title-bar-controls"><button onclick="minimizeWindow('teletext')">_</button><button onclick="maximizeWindow('teletext')">□</button><button onclick="closeWindow('teletext')">×</button></div>
-  </div>
-  <div class="window-body" style="padding:0;">
-    <iframe src="teletext.html" style="width:100%;height:100%;border:none;" title="Teletext Art Studio"></iframe>
-  </div>
-  <div class="resize-handle" onmousedown="startResize(event,'win-teletext')"></div>
-</div>
+<footer>
+  <a href="https://github.com/onurhani" target="_blank">GitHub</a>
+  <a href="https://linkedin.com/in/onur-irkin" target="_blank">LinkedIn</a>
+  <a href="mailto:onurhan.irkin@gmail.com">Email</a>
+</footer>
 
-<!-- LINKS -->
-<div class="window hidden" id="win-links" style="width:360px;height:280px;top:80px;left:200px;z-index:10;">
-  <div class="title-bar" onmousedown="startDrag(event,'win-links')">
-    <svg class="title-bar-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#4169e1"/><ellipse cx="8" cy="8" rx="3" ry="6" fill="none" stroke="#fff" stroke-width="0.6"/><line x1="2" y1="8" x2="14" y2="8" stroke="#fff" stroke-width="0.6"/></svg>
-    <span class="title-bar-text">Links</span>
-    <div class="title-bar-controls"><button onclick="minimizeWindow('links')">_</button><button onclick="maximizeWindow('links')">□</button><button onclick="closeWindow('links')">×</button></div>
-  </div>
-  <div class="window-body">
-    <h2>Find Me Online</h2>
-    <ul style="list-style:none;margin-left:0;">
-      <li style="margin:8px 0"><a href="https://github.com/onurhani" target="_blank">GitHub</a><span style="color:var(--win-dark)"> — github.com/onurhani</span></li>
-      <li style="margin:8px 0"><a href="https://www.linkedin.com/in/onur-irkin/" target="_blank">LinkedIn</a><span style="color:var(--win-dark)"> — linkedin.com/in/onur-irkin</span></li>
-      <li style="margin:8px 0"><a href="mailto:onurhan.irkin@gmail.com">Email</a><span style="color:var(--win-dark)"> — onurhan.irkin@gmail.com</span></li>
-    </ul>
-    <hr class="divider">
-    <h2>Projects</h2>
-    <ul style="list-style:none;margin-left:0;">
-      <li style="margin:8px 0"><a href="#" onclick="closeWindow('links');openWindow('projects');return false;">Open Projects folder</a></li>
-    </ul>
-  </div>
-  <div class="status-bar"><div class="status-bar-field">Done</div></div>
-  <div class="resize-handle" onmousedown="startResize(event,'win-links')"></div>
-</div>
-
-<!-- BLOG — posts loaded from posts/*.md -->
-<div class="window hidden" id="win-blog" style="width:540px;height:460px;top:45px;left:150px;z-index:10;">
-  <div class="title-bar" onmousedown="startDrag(event,'win-blog')">
-    <svg class="title-bar-icon" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="1" fill="#800000"/><text x="3" y="11" fill="#fff" font-size="7" font-weight="bold" font-family="sans-serif">B</text></svg>
-    <span class="title-bar-text">Blog - onur's thinkspace</span>
-    <div class="title-bar-controls"><button onclick="minimizeWindow('blog')">_</button><button onclick="maximizeWindow('blog')">□</button><button onclick="closeWindow('blog')">×</button></div>
-  </div>
-  <div class="window-body">
-    <div class="blog-nav" id="blog-nav"></div>
-    <div id="blog-content" class="blog-content"></div>
-  </div>
-  <div class="status-bar"><div class="status-bar-field" id="blog-status">2 posts</div></div>
-  <div class="resize-handle" onmousedown="startResize(event,'win-blog')"></div>
-</div>
-
-<!-- START MENU -->
-<div id="start-menu">
-  <div class="start-menu-sidebar"><span>OnurOS 98</span></div>
-  <div class="start-menu-items">
-    <div class="start-menu-item" onclick="openWindow('about');closeStartMenu();"><svg class="smi-icon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" fill="#ffffe0" stroke="#808080"/><text x="5" y="15" fill="#333" font-size="6" font-family="monospace">txt</text></svg><span>About Me</span></div>
-    <div class="start-menu-item" onclick="openWindow('resume');closeStartMenu();"><svg class="smi-icon" viewBox="0 0 24 24"><path d="M4 1H16L20 5V23H4Z" fill="#fff" stroke="#808080"/><rect x="7" y="7" width="10" height="1" fill="#d00"/></svg><span>Resume</span></div>
-    <div class="start-menu-item" onclick="openWindow('projects');closeStartMenu();"><svg class="smi-icon" viewBox="0 0 24 24"><path d="M2 6 Q2 4 4 4 L10 4 L12 2 L20 2 Q22 2 22 4 L22 20 Q22 22 20 22 L4 22 Q2 22 2 20 Z" fill="#f0c040" stroke="#808080"/><path d="M2 8 L22 8 L22 20 Q22 22 20 22 L4 22 Q2 22 2 20 Z" fill="#f8d860" stroke="#808080"/></svg><span>Projects</span></div>
-    <div class="start-menu-item" onclick="openWindow('teletext');closeStartMenu();"><svg class="smi-icon" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="16" rx="1" fill="#222" stroke="#808080"/><text x="5" y="14" fill="#0ff" font-size="7" font-family="monospace">TXT</text></svg><span>Teletext Art</span></div>
-    <hr class="start-menu-sep">
-    <div class="start-menu-item" onclick="openWindow('links');closeStartMenu();"><svg class="smi-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#4169e1"/><ellipse cx="12" cy="12" rx="5" ry="9" fill="none" stroke="#fff" stroke-width="0.8"/><line x1="3" y1="12" x2="21" y2="12" stroke="#fff" stroke-width="0.8"/></svg><span>Internet Links</span></div>
-    <div class="start-menu-item" onclick="openWindow('blog');closeStartMenu();"><svg class="smi-icon" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" fill="#800000" rx="1"/><text x="5" y="16" fill="#fff" font-size="10" font-weight="bold">B</text></svg><span>Blog</span></div>
-  </div>
-</div>
-
-<!-- TASKBAR -->
-<div id="taskbar">
-  <button id="start-btn" onclick="toggleStartMenu()">
-    <svg class="win-logo" viewBox="0 0 16 16"><rect x="1" y="1" width="6" height="6" fill="#ff0000"/><rect x="9" y="1" width="6" height="6" fill="#00ff00"/><rect x="1" y="9" width="6" height="6" fill="#0000ff"/><rect x="9" y="9" width="6" height="6" fill="#ffff00"/></svg>
-    Start
-  </button>
-  <div class="taskbar-divider"></div>
-  <div id="taskbar-windows"></div>
-  <div class="taskbar-divider"></div>
-  <div id="clock"></div>
-</div>
-
-<script>
-// ─── Posts config — add new posts here ───────────────────────────────────────
-const POSTS = [
-  {id:'post1', file:'posts/post1.md', tab:'Profitable App',  title:'How To Develop A Profitable App',        date:'12 Jan 2020', summary:'A simple analysis to shed light on App Store and Google Store apps.'},
-  {id:'post2', file:'posts/post2.md', tab:'Collatz',         title:'Collatz sequence (or Hailstone sequence)', date:'18 Jun 2019', summary:'Creating the Collatz sequence with Python.'},
-];
-
-// ─── Projects config — add new projects here ─────────────────────────────────
-const PROJECTS = [
-  {id:'dog-api', file:'projects/dog-api-pipeline.md', tab:'Dog API Pipeline', title:'Dog API Pipeline',   stack:'dlt · Airflow · DuckDB'},
-  {id:'predict', file:'projects/predict-may.md',       tab:'Predict May',      title:'Predict May',        stack:'Python · dbt · DuckDB · MotherDuck'},
-];
-
-// ─── Window management ────────────────────────────────────────────────────────
-let zCounter = 100;
-const windows = {};
-const windowTitles = {about:'about_me.txt', resume:'Resume.pdf', projects:'Projects', teletext:'Teletext Art', links:'Links', blog:'Blog', predictmay:'Predict May'};
-
-function openWindow(id){const w=document.getElementById('win-'+id);if(!w)return;if(id==='predictmay'){const f=document.getElementById('predictmay-iframe');if(f){const s=f.getAttribute('data-src');if(s&&f.src!==s){f.src=s;}}}w.classList.remove('hidden');bringToFront(id);windows[id]=true;updateTaskbar()}
-function closeWindow(id){const w=document.getElementById('win-'+id);if(!w)return;w.classList.add('hidden');w.classList.remove('maximized');delete windows[id];updateTaskbar()}
-function minimizeWindow(id){const w=document.getElementById('win-'+id);if(!w)return;w.classList.add('hidden');updateTaskbar()}
-function maximizeWindow(id){const w=document.getElementById('win-'+id);if(!w)return;w.classList.toggle('maximized')}
-function bringToFront(id){zCounter++;const w=document.getElementById('win-'+id);if(w){w.style.zIndex=zCounter;document.querySelectorAll('.window').forEach(x=>x.classList.add('inactive'));w.classList.remove('inactive')}updateTaskbar()}
-function focusOrMinimize(id){const w=document.getElementById('win-'+id);if(!w)return;if(w.classList.contains('hidden')){w.classList.remove('hidden');bringToFront(id)}else if(!w.classList.contains('inactive'))minimizeWindow(id);else bringToFront(id)}
-function updateTaskbar(){const c=document.getElementById('taskbar-windows');c.innerHTML='';for(const id in windows){const w=document.getElementById('win-'+id),active=w&&!w.classList.contains('hidden')&&!w.classList.contains('inactive');const b=document.createElement('button');b.className='taskbar-btn'+(active?' active':'');b.innerHTML='<span>'+windowTitles[id]+'</span>';b.onclick=()=>focusOrMinimize(id);c.appendChild(b)}}
-
-// ─── Boot sequence ────────────────────────────────────────────────────────────
-(function boot(){
-  const bar=document.getElementById('boot-bar'), text=document.getElementById('boot-text');
-  const msgs=['Loading OnurOS 98...','Initializing semantic layer...','Running dbt models...','Connecting to data warehouse...','Loading desktop...'];
-  let step=0;
-  const iv=setInterval(()=>{
-    if(step<msgs.length){text.textContent=msgs[step];bar.style.width=((step+1)/msgs.length*100)+'%';step++}
-    else{clearInterval(iv);setTimeout(()=>{document.getElementById('boot-screen').classList.add('fade-out');setTimeout(()=>{document.getElementById('boot-screen').style.display='none';openWindow('about')},500)},400)}
-  },500);
-})();
-
-// ─── Load about_me.txt ────────────────────────────────────────────────────────
-fetch('about_me.txt')
-  .then(r=>r.text())
-  .then(t=>{document.getElementById('about-content').textContent=t})
-  .catch(()=>{document.getElementById('about-content').textContent='[Error loading about_me.txt]'});
-
-// ─── Blog ─────────────────────────────────────────────────────────────────────
-const postCache = {};
-
-function initBlog(){
-  const nav=document.getElementById('blog-nav');
-  nav.innerHTML='';
-  const idxBtn=document.createElement('button');
-  idxBtn.className='blog-tab active'; idxBtn.id='blog-tab-index'; idxBtn.textContent='Index';
-  idxBtn.onclick=()=>showBlogIndex();
-  nav.appendChild(idxBtn);
-  POSTS.forEach(p=>{
-    const btn=document.createElement('button');
-    btn.className='blog-tab'; btn.id='blog-tab-'+p.id; btn.textContent=p.tab;
-    btn.onclick=()=>showBlogPost(p.id);
-    nav.appendChild(btn);
-  });
-  showBlogIndex();
-}
-
-function showBlogIndex(){
-  document.querySelectorAll('.blog-tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('blog-tab-index').classList.add('active');
-  let html=`<h1 style="color:#800000;border-bottom:2px solid #800000;margin-bottom:8px;">onur's thinkspace</h1>`
-    +`<p style="color:#808080;margin-bottom:12px;">Writing about data, analytics engineering, and things I find interesting.</p>`
-    +`<hr style="border:none;border-top:1px solid #808080;margin:8px 0;">`;
-  POSTS.forEach(p=>{
-    html+=`<div style="margin-bottom:12px;">`
-      +`<p><b><a href="#" onclick="showBlogPost('${p.id}');return false;">${p.title}</a></b></p>`
-      +`<p style="color:#808080;font-size:11px;">${p.date}</p>`
-      +`<p>${p.summary}</p></div>`
-      +`<hr style="border:none;border-top:1px solid #808080;margin:8px 0;">`;
-  });
-  document.getElementById('blog-content').innerHTML=html;
-  document.getElementById('blog-status').textContent=POSTS.length+' posts';
-}
-
-function showBlogPost(postId){
-  const post=POSTS.find(p=>p.id===postId);
-  if(!post)return;
-  document.querySelectorAll('.blog-tab').forEach(t=>t.classList.remove('active'));
-  const tab=document.getElementById('blog-tab-'+postId);
-  if(tab)tab.classList.add('active');
-  document.getElementById('blog-status').textContent=post.title;
-  const content=document.getElementById('blog-content');
-  const backLink='<p style="margin-bottom:8px;"><a href="#" onclick="showBlogIndex();return false;">&lt; Back to index</a></p>';
-  if(postCache[postId]){content.innerHTML=backLink+postCache[postId];return}
-  content.innerHTML='<p>Loading...</p>';
-  fetch(post.file)
-    .then(r=>r.text())
-    .then(md=>{
-      const html=(typeof marked!=='undefined')?(marked.parse||marked)(md):`<pre>${md}</pre>`;
-      postCache[postId]=html;
-      content.innerHTML=backLink+html;
-    })
-    .catch(()=>{content.innerHTML=backLink+'<p>[Error loading post]</p>'});
-}
-
-initBlog();
-
-// ─── Projects ─────────────────────────────────────────────────────────────────
-const projectCache = {};
-
-function initProjects(){
-  const nav=document.getElementById('projects-nav');
-  nav.innerHTML='';
-  const idxBtn=document.createElement('button');
-  idxBtn.className='blog-tab active'; idxBtn.id='proj-tab-index'; idxBtn.textContent='Index';
-  idxBtn.onclick=()=>showProjectIndex();
-  nav.appendChild(idxBtn);
-  PROJECTS.forEach(p=>{
-    const btn=document.createElement('button');
-    btn.className='blog-tab'; btn.id='proj-tab-'+p.id; btn.textContent=p.tab;
-    btn.onclick=()=>showProject(p.id);
-    nav.appendChild(btn);
-  });
-  showProjectIndex();
-}
-
-function showProjectIndex(){
-  document.querySelectorAll('#projects-nav .blog-tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('proj-tab-index').classList.add('active');
-  let html=`<h1 style="border-bottom:2px solid var(--win-dark);margin-bottom:8px;">Projects</h1>`;
-  PROJECTS.forEach(p=>{
-    html+=`<div style="margin-bottom:12px;">`
-      +`<p><b><a href="#" onclick="showProject('${p.id}');return false;">${p.title}</a></b></p>`
-      +`<p style="color:#808080;font-size:11px;">${p.stack}</p></div>`
-      +`<hr style="border:none;border-top:1px solid #808080;margin:8px 0;">`;
-  });
-  document.getElementById('projects-content').innerHTML=html;
-  document.getElementById('projects-status').textContent=PROJECTS.length+' projects';
-}
-
-function showProject(projId){
-  const proj=PROJECTS.find(p=>p.id===projId);
-  if(!proj)return;
-  document.querySelectorAll('#projects-nav .blog-tab').forEach(t=>t.classList.remove('active'));
-  const tab=document.getElementById('proj-tab-'+projId);
-  if(tab)tab.classList.add('active');
-  document.getElementById('projects-status').textContent=proj.title;
-  const content=document.getElementById('projects-content');
-  const backLink='<p style="margin-bottom:8px;"><a href="#" onclick="showProjectIndex();return false;">&lt; Back to index</a></p>';
-  if(projectCache[projId]){content.innerHTML=backLink+projectCache[projId];return}
-  content.innerHTML='<p>Loading...</p>';
-  fetch(proj.file)
-    .then(r=>r.text())
-    .then(md=>{
-      const html=(typeof marked!=='undefined')?(marked.parse||marked)(md):`<pre>${md}</pre>`;
-      projectCache[projId]=html;
-      content.innerHTML=backLink+html;
-    })
-    .catch(()=>{content.innerHTML=backLink+'<p>[Error loading project]</p>'});
-}
-
-initProjects();
-
-// ─── Clock ────────────────────────────────────────────────────────────────────
-function updateClock(){const n=new Date(),h=n.getHours(),m=n.getMinutes().toString().padStart(2,'0'),ap=h>=12?'PM':'AM';document.getElementById('clock').textContent=(h%12||12)+':'+m+' '+ap}
-updateClock();setInterval(updateClock,30000);
-
-// ─── Desktop icon selection ───────────────────────────────────────────────────
-function selectIcon(el){document.querySelectorAll('.desktop-icon').forEach(i=>i.classList.remove('selected'));el.classList.add('selected')}
-document.getElementById('desktop').addEventListener('click',function(e){if(e.target===this)document.querySelectorAll('.desktop-icon').forEach(i=>i.classList.remove('selected'))});
-
-// ─── Drag & resize ────────────────────────────────────────────────────────────
-document.getElementById('desktop').addEventListener('mousedown',function(e){if(e.target===this||e.target.classList.contains('desktop-icon')||e.target.closest('.desktop-icon')){document.querySelectorAll('.window').forEach(w=>w.classList.add('inactive'));updateTaskbar()}});
-document.addEventListener('mousedown',function(e){const w=e.target.closest('.window');if(w)bringToFront(w.id.replace('win-',''))});
-
-let dragState=null, resizeState=null;
-function startDrag(e,winId){const w=document.getElementById(winId);if(w.classList.contains('maximized'))return;dragState={el:w,startX:e.clientX-w.offsetLeft,startY:e.clientY-w.offsetTop};e.preventDefault()}
-function startResize(e,winId){const w=document.getElementById(winId);if(w.classList.contains('maximized'))return;resizeState={el:w};e.preventDefault();e.stopPropagation()}
-document.addEventListener('mousemove',function(e){
-  if(dragState){dragState.el.style.left=(e.clientX-dragState.startX)+'px';dragState.el.style.top=(e.clientY-dragState.startY)+'px'}
-  if(resizeState){resizeState.el.style.width=Math.max(200,e.clientX-resizeState.el.offsetLeft)+'px';resizeState.el.style.height=Math.max(120,e.clientY-resizeState.el.offsetTop)+'px'}
-});
-document.addEventListener('mouseup',function(){dragState=null;resizeState=null});
-
-// ─── Start menu ───────────────────────────────────────────────────────────────
-function toggleStartMenu(){document.getElementById('start-menu').classList.toggle('visible');document.getElementById('start-btn').classList.toggle('active')}
-function closeStartMenu(){document.getElementById('start-menu').classList.remove('visible');document.getElementById('start-btn').classList.remove('active')}
-document.addEventListener('click',function(e){if(!e.target.closest('#start-menu')&&!e.target.closest('#start-btn'))closeStartMenu()});
-
-// ─── Touch drag support ───────────────────────────────────────────────────────
-document.addEventListener('touchstart',function(e){
-  const tb=e.target.closest('.title-bar');
-  if(tb){const w=tb.closest('.window');if(w&&!w.classList.contains('maximized')){const t=e.touches[0];dragState={el:w,startX:t.clientX-w.offsetLeft,startY:t.clientY-w.offsetTop};e.preventDefault()}}
-},{passive:false});
-document.addEventListener('touchmove',function(e){
-  if(dragState){const t=e.touches[0];dragState.el.style.left=(t.clientX-dragState.startX)+'px';dragState.el.style.top=(t.clientY-dragState.startY)+'px';e.preventDefault()}
-},{passive:false});
-document.addEventListener('touchend',function(){dragState=null});
-</script>
 </body>
 </html>
